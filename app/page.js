@@ -10,9 +10,12 @@ import {
   X,
   ExternalLink,
   Code2,
+  Briefcase,
 } from "lucide-react";
 
-// ---- Projects ----
+// ---------- DATA ----------
+
+// Projects
 const PROJECTS = [
   {
     title: "Generative Charities",
@@ -20,8 +23,8 @@ const PROJECTS = [
     stack: ["Django", "AWS EB", "S3", "PostgreSQL", "OAuth2"],
     blurb:
       "Django web app connecting donors to smaller U.S. charities. Epic FHIR integration, S3 CSV storage, and EB deployment.",
-    demo: "/gc-demo.mp4",
-    poster: "/gc-poster.jpg",
+    demo: "/gc-demo.mp4",       // served from /public
+    poster: "/gc-poster.jpg",   // optional
     highlights: [
       "Implemented Epic OAuth2 and fetched FHIR Observations",
       "Uploaded aggregated analytics to S3 (CSV)",
@@ -43,53 +46,58 @@ const PROJECTS = [
   },
 ];
 
-// ---- Personal profile ----
+// Profile
 const PROFILE = {
   name: "Bradley Elder",
   role: "Systems Engineering @ UVA · CS Minor",
   headshot: "/headshot.jpg",
-  summary:
-    "I build human-centered, data-driven software. My interests span healthcare integrations (FHIR), usable analytics, and clean deployment pipelines.",
-  objectives: [
-    "Pursue summer 2026  Systems Engineering and software/dev internships",
-    "Grow expertise in React, Next.js, and cloud (AWS)",
-  ],
   email: "bradleyelder24@gmail.com",
   github: "https://github.com/Belder21",
   linkedin: "https://www.linkedin.com/in/bradleyjelder21",
   resume: "/Bradley_Elder_Resume.pdf",
+
+  // About Me — short intro + quick bullets (easy to read)
+  aboutIntro:
+    "Second-year Systems Engineering student at UVA, seeking summer internship opportunities. I love learning new things, connecting with people, and using my knowledge of tecnology to benifit the real world.",
+  aboutBullets: [
+    "From Fairfax, VA; Systems Engineering + CS minor",
+    "Enjoy human-centered, data-driven software",
+    "Hands-on with Django, AWS EB, S3, SQL, and Python",
+    "Interested in data analytics, cloud, and usable design",
+  ],
+
+  objectives: [
+    "Pursue summer 2026 Systems Engineering and software/dev internships",
+    "Grow expertise in React, Next.js, and cloud (AWS)",
+  ],
 };
 
-// ---- Skills ----
-const SKILLS = {
-  Languages: [
-    {name: "Python", source: "Generative Charities & Coursework"},
-    {name: "Java", source: "Coursework"},
-    {name: "C#", source: "VR Towers of Hanoi Research"},
-  ],
+// Jobs / Experience (add more as you go)
+const JOBS = [
+  {
+    role: "Software Engineering Intern",
+    company: "Generative Charities",
+    period: "Summer 2025",
+    summary:
+      "Built a platform to promote charities across the U.S.; focused on integrations, data handling, and deployments.",
+    bullets: [
+      "Developed Django features and REST endpoints",
+      "Integrated Epic OAuth2; fetched FHIR Observations",
+      "Stored analytics to S3 (CSV) and deployed via AWS EB",
+    ],
+    tech: ["Django", "AWS EB", "S3", "PostgreSQL", "Python", "GitHub"],
+    link: "", // optional: live site or repo
+  },
+  // Add more experiences here...
+];
 
-  Frameworks: [
-    {name: "Django", source: "Generative Charities"},
-    {name: "React", source: "Portfolio Website"},
-    {name: "Next.js", source: "Portfolio Website"},
-    {name: "Unity/C#", source: "VR Towers of Hanoi Research"},
-  ],
-  Cloud: [
-    { name: "AWS Elastic Beanstalk", source: "Generative Charities" },
-    { name: "Amazon S3", source: "Generative Charities" },
-    { name: "Amazon RDS", source: "Generative Charities" },
-  ],
-  Frameworks: [
-    { name: "Django", source: "Generative Charities" },
-    { name: "React", source: "Portfolio Website" },
-    { name: "Next.js", source: "Portfolio Website" },
-  ],
-  Databases: [{ name: "PostgreSQL", source: "Generative Charities" }],
-  Tools: [{ name: "Git/GitHub", source: "Generative Charities & VR Towers of Hanoi Research"}],
-  HumanSkills: [
-    { name: "Management", source: "Head Lifeguard and Pool Operator" },
-    { name: "Teamwork", source: "Generative Charities & VR Towers of Hanoi Research" },
-  ]
+// Skills
+const SKILLS = {
+  Languages: ["Python", "Java", "C#", "SQL"],
+  Frameworks: ["Django", "React", "Next.js", "Unity/C#"],
+  Cloud: ["AWS Elastic Beanstalk", "Amazon S3", "Amazon RDS"],
+  Databases: ["PostgreSQL"],
+  Tools: ["Git/GitHub"],
 };
 
 export default function Portfolio() {
@@ -105,8 +113,8 @@ export default function Portfolio() {
           </a>
           <nav className="hidden md:flex items-center gap-6">
             <a href="#projects" className="hover:text-blue-200">Projects</a>
+            <a href="#jobs" className="hover:text-blue-200">Jobs</a>
             <a href="#skills" className="hover:text-blue-200">Skills</a>
-            <a href="#about" className="hover:text-blue-200">About</a>
             <a href="#contact" className="hover:text-blue-200">Contact</a>
             <a
               href={PROFILE.resume}
@@ -128,8 +136,8 @@ export default function Portfolio() {
             <div className="px-4 py-2 flex flex-col gap-2">
               {[
                 ["Projects", "#projects"],
+                ["Jobs", "#jobs"],
                 ["Skills", "#skills"],
-                ["About", "#about"],
                 ["Contact", "#contact"],
               ].map(([label, href]) => (
                 <a
@@ -153,62 +161,75 @@ export default function Portfolio() {
       </header>
 
       {/* Hero */}
-<section id="home" className="mx-auto max-w-6xl px-4 py-16">
-  <div className="grid md:grid-cols-3 gap-10 items-center">
-    <div className="md:col-span-1 flex justify-center">
-      <img
-        src={PROFILE.headshot}
-        alt={`${PROFILE.name} headshot`}
-        className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover border border-blue-100 shadow-sm"
-      />
-    </div>
-    <div className="md:col-span-2">
-      <p className="text-sm uppercase tracking-wider text-blue-700/70">
-        {PROFILE.role}
-      </p>
-      <h1 className="mt-1 text-4xl md:text-5xl font-extrabold leading-tight text-blue-900">
-        {PROFILE.name}
-      </h1>
+      <section id="home" className="mx-auto max-w-6xl px-4 py-16">
+        <div className="grid md:grid-cols-3 gap-10 items-start">
+          <div className="md:col-span-1 flex justify-center">
+            <img
+              src={PROFILE.headshot}
+              alt={`${PROFILE.name} headshot`}
+              className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover border border-blue-100 shadow-sm"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <p className="text-sm uppercase tracking-wider text-blue-700/70">
+              {PROFILE.role}
+            </p>
+            <h1 className="mt-1 text-4xl md:text-5xl font-extrabold leading-tight text-blue-900">
+              {PROFILE.name}
+            </h1>
 
-      {/* About Me under name */}
-      <p className="mt-4 text-slate-700 leading-relaxed max-w-prose">
-        I am a second-year student at the University of Virginia studying
-        <strong> Systems Engineering with a Minor in Computer Science</strong>. 
-        Originally from Fairfax, VA, I am currently seeking summer internship
-        opportunities where I can apply my technical and analytical skills.
-        I enjoy systems engineering because it teaches me to see the
-        <em> big picture</em>—connecting people, processes, and technology to
-        design solutions that work in the real world. This past summer, I
-        interned at a start-up called <strong>Generative Charities</strong>,
-        where I helped build a platform promoting charities across the United
-        States. Through this experience, I strengthened my skills in
-        <strong> Django, AWS Elastic Beanstalk, Amazon S3, and SQL</strong>,
-        while also gaining hands-on practice with <strong>Python, GitHub, and
-        cloud-based development</strong>. I am especially interested in combining
-        <strong> data analytics, cloud computing, and human-centered design</strong>
-        to solve meaningful problems and make technology more impactful.
-      </p>
+            {/* Cleaner About Me: short intro + bullets */}
+            <p className="mt-4 text-slate-700 leading-relaxed max-w-prose">
+              {PROFILE.aboutIntro}
+            </p>
+            <ul className="mt-3 grid gap-2 text-slate-700 max-w-prose list-disc list-inside">
+              {PROFILE.aboutBullets.map((b) => (
+                <li key={b}>{b}</li>
+              ))}
+            </ul>
 
-      {/* Objectives box */}
-      <div className="mt-6 rounded-2xl border border-blue-100 bg-white/70 p-4">
-        <h3 className="text-sm font-semibold text-blue-900 uppercase tracking-wider">
-          Objectives
-        </h3>
-        <ul className="mt-2 list-disc list-inside text-slate-700 space-y-1">
-          {PROFILE.objectives.map((o) => (
-            <li key={o}>{o}</li>
-          ))}
-        </ul>
-      </div>
+            {/* Objectives box */}
+            <div className="mt-6 rounded-2xl border border-blue-100 bg-white/70 p-4">
+              <h3 className="text-sm font-semibold text-blue-900 uppercase tracking-wider">
+                Objectives
+              </h3>
+              <ul className="mt-2 list-disc list-inside text-slate-700 space-y-1">
+                {PROFILE.objectives.map((o) => (
+                  <li key={o}>{o}</li>
+                ))}
+              </ul>
+            </div>
 
-      {/* CTAs */}
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        ...
-      </div>
-    </div>
-  </div>
-</section>
-
+            {/* CTAs */}
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <a
+                href={`mailto:${PROFILE.email}`}
+                className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-white/50 bg-blue-900 text-white hover:bg-blue-800"
+              >
+                <Mail className="h-4 w-4" /> Email
+              </a>
+              <a
+                href={PROFILE.github}
+                className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-blue-200 bg-white hover:bg-blue-50"
+              >
+                <Github className="h-4 w-4 text-blue-700" /> GitHub
+              </a>
+              <a
+                href={PROFILE.linkedin}
+                className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-blue-200 bg-white hover:bg-blue-50"
+              >
+                <Linkedin className="h-4 w-4 text-blue-700" /> LinkedIn
+              </a>
+              <a
+                href={PROFILE.resume}
+                className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-blue-200 bg-white hover:bg-blue-50"
+              >
+                <Download className="h-4 w-4 text-blue-700" /> Resume
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Projects */}
       <section id="projects" className="bg-white border-y border-blue-100">
@@ -284,6 +305,59 @@ export default function Portfolio() {
         </div>
       </section>
 
+      {/* Jobs / Experience */}
+      <section id="jobs" className="mx-auto max-w-6xl px-4 py-14">
+        <h2 className="text-2xl font-bold text-blue-900 flex items-center gap-2">
+          <Briefcase className="h-5 w-5 text-blue-800" /> Jobs
+        </h2>
+
+        <div className="mt-6 grid gap-6">
+          {JOBS.map((j) => (
+            <article
+              key={`${j.company}-${j.role}`}
+              className="rounded-3xl border border-blue-100 bg-white p-5 shadow-sm transition-all transform-gpu
+                         hover:-translate-y-1 hover:shadow-2xl hover:border-blue-300"
+            >
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-900">
+                    {j.role} · {j.company}
+                  </h3>
+                  <p className="text-xs text-blue-700/70">{j.period}</p>
+                </div>
+                {j.link && (
+                  <a
+                    href={j.link}
+                    className="inline-flex items-center gap-1 text-sm text-blue-800 underline hover:no-underline"
+                  >
+                    <ExternalLink className="h-4 w-4" /> View
+                  </a>
+                )}
+              </div>
+
+              <p className="mt-3 text-sm text-slate-700">{j.summary}</p>
+
+              <ul className="mt-3 list-disc list-inside text-sm text-slate-700 space-y-1">
+                {j.bullets.map((b, i) => (
+                  <li key={i}>{b}</li>
+                ))}
+              </ul>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {j.tech.map((t) => (
+                  <span
+                    key={t}
+                    className="text-xs border border-blue-200 bg-blue-50 text-blue-800 rounded-xl px-2 py-1"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       {/* Skills */}
       <section id="skills" className="mx-auto max-w-6xl px-4 py-14">
         <h2 className="text-2xl font-bold text-blue-900">Skills</h2>
@@ -297,26 +371,11 @@ export default function Portfolio() {
               <h3 className="font-semibold text-blue-900">{cat}</h3>
               <ul className="mt-3 space-y-1 text-sm text-slate-700">
                 {items.map((s) => (
-                  <li key={s.name}>
-                     • {s.name}
-                    <span className="ml-2 text-xs text-blue-600 italic">
-                    ({s.source})
-                  </span>
-                  </li>
+                  <li key={s}>• {s}</li>
                 ))}
               </ul>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* About */}
-      <section id="about" className="bg-gradient-to-r from-blue-50 to-white border-y border-blue-100">
-        <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className="text-2xl font-bold text-blue-900">About</h2>
-          <p className="mt-4 max-w-prose text-slate-700">
-            My name is Bradley Elder, and I am a second-year student at the University of Virginia studying Systems Engineering with a Minor in Computer Science. I am originally from Fairfax, VA, and I am currently seeking summer internship opportunities where I can apply my technical and analytical skills. I enjoy systems engineering because it teaches me how to see the big picture — connecting people, processes, and technology to design solutions that actually work in the real world. This past summer, I interned at a start-up called Generative Charities, where I helped build a platform promoting charities across the United States. Through this experience, I strengthened my skills in Django, AWS Elastic Beanstalk, Amazon S3, and SQL, while also gaining hands-on practice with Python, GitHub, and cloud-based development. I am especially interested in combining data analytics, cloud computing, and human-centered design to solve meaningful problems and make technology more impactful.
-          </p>
         </div>
       </section>
 
