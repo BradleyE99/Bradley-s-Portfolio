@@ -59,13 +59,12 @@ const PROFILE = {
   aboutIntro:
     "Second-year Systems Engineering student at UVA, seeking summer internship opportunities. I like connecting people, processes, and technology to design solutions that work in the real world.",
   aboutBullets: [
-    "From Fairfax, VA; Systems Engineering + CS minor",
-    "Enjoy human-centered, data-driven software",
+    "From Fairfax, VA; Systems Engineering + CS Major",
     "Hands-on with Django, AWS EB, S3, SQL, and Python",
-    "Interested in data analytics, cloud, and usable design",
+    "Interested in data analytics, Tech consulting, data science, and software engineering",
   ],
   objectives: [
-    "Pursue summer 2026 Systems Engineering and software/dev internships",
+    "Seeking a Summer 2026 internship to apply Systems Engineering and Computer Science skills in Data Analytics, Data Science, Software Engineering, or Technology Consulting.",
   ],
 };
 
@@ -75,11 +74,11 @@ const JOBS = [
     company: "Generative Charities",
     period: "Summer 2025",
     summary:
-      "Built a platform to promote charities across the U.S.; focused on integrations, data handling, and deployments.",
+      "During my internship at Generative Charities, I applied both technical and analytical skills to support a nonprofit startup focused on empowering smaller U.S. charities.",
     bullets: [
-      "Developed Django features and REST endpoints",
-      "Integrated Epic OAuth2; fetched FHIR Observations",
-      "Stored analytics to S3 (CSV) and deployed via AWS EB",
+      "Conducted systems analysis to identify strategies that help local charities expand their reach and provide more personalized support to people in need.",
+      "Built and deployed a web platform using Python, HTML, and Amazon Web Services (AWS), aligning technical solutions with the organization’s mission and values.",
+      "Utilized open.epic to pull medical data usings apis.",
     ],
     tech: ["Django", "AWS EB", "S3", "PostgreSQL", "Python", "GitHub"],
     link: "",
@@ -91,7 +90,6 @@ const SKILLS = {
   Frameworks: ["Django", "React", "Next.js", "Unity/C#"],
   Cloud: ["AWS Elastic Beanstalk", "Amazon S3", "Amazon RDS"],
   Databases: ["PostgreSQL"],
-  Tools: ["Git/GitHub"],
 };
 
 export default function Portfolio() {
