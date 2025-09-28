@@ -27,8 +27,11 @@ const PROJECTS = [
     poster: "/gc-poster.jpg",
     highlights: [
       "Implemented Epic OAuth2 authentication and integrated FHIR APIs to fetch patient medical observation data",
+      "",
       "Aggregated analytics into CSV files stored in Amazon S3, and managed user data with a PostgreSQL database",
+      "",
       "Built a dashboard, search functionality, and authentication system (login/logout) using Python, Django, HTML",
+      "",
       "Deployed the full-stack application on AWS Elastic Beanstalk, ensuring scalable and reliable performance",
     ],
   },
@@ -42,7 +45,9 @@ const PROJECTS = [
     demo: "",
     highlights: [
       "Researched the impact of gesture-based interaction on student learning outcomes within VR environments",
+      "",
       "Analyzed prior studies on Natural User Interfaces (NUI) and their role in education and peer-to-peer teaching.",
+      "",
       "Developed an interactive Towers of Hanoi game in Unity (C#) to study gesture-based interaction",
     ],
     images: ["/hanoi-1.jpg", "/hanoi-2.jpg"],
@@ -80,7 +85,9 @@ const JOBS = [
       "During my internship at Generative Charities, I applied both technical and analytical skills to support a nonprofit startup focused on empowering smaller U.S. charities.",
     bullets: [
       "Conducted systems analysis to identify strategies that help local charities expand their reach and provide more personalized support to people in need.",
+      "",
       "Built and deployed a web platform using Python, HTML, and Amazon Web Services (AWS), aligning technical solutions with the organization’s mission and values.",
+      "",
       "Utilized open.epic to pull medical data using APIs.",
     ],
     tech: ["Django", "AWS EB", "S3", "PostgreSQL", "Python", "GitHub"],
