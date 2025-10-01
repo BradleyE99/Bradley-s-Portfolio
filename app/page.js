@@ -231,7 +231,7 @@ export default function Portfolio() {
                         ))}
                       </div>
                       <ul className="mt-3 list-disc list-inside text-sm text-slate-700 space-y-1">
-                        {p.highlights.map((h, i) => (
+                        {p.highlights.filter((h) => h.trim() !== "").map((h, i) => (
                           <li key={i}>{h}</li>
                         ))}
                       </ul>
@@ -294,7 +294,7 @@ export default function Portfolio() {
                       ))}
                     </div>
                     <ul className="mt-3 list-disc list-inside text-sm text-slate-700 space-y-1">
-                      {p.highlights.map((h, i) => (
+                      {p.highlights.filter((h) => h.trim() !== "").map((h, i) => (
                         <li key={i}>{h}</li>
                       ))}
                     </ul>
