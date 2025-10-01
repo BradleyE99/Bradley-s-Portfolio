@@ -85,9 +85,7 @@ const JOBS = [
       "During my internship at Generative Charities, I applied both technical and analytical skills to support a nonprofit startup focused on empowering smaller U.S. charities.",
     bullets: [
       "Conducted systems analysis to identify strategies that help local charities expand their reach and provide more personalized support to people in need.",
-      "",
       "Built and deployed a web platform using Python, HTML, and Amazon Web Services (AWS), aligning technical solutions with the organization’s mission and values.",
-      "",
       "Utilized open.epic to pull medical data using APIs.",
     ],
     tech: ["Django", "AWS EB", "S3", "PostgreSQL", "Python", "GitHub"],
