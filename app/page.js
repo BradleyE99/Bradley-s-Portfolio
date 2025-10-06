@@ -12,6 +12,7 @@ import {
   Code2,
   Briefcase,
   ArrowRight,
+  ArrowLeft,
 } from "lucide-react";
 
 // ---------- DATA ----------
@@ -118,6 +119,9 @@ const SKILLS = {
 export default function Portfolio() {
   const [open, setOpen] = useState(false);
   const [hanoiIdx, setHanoiIdx] = useState(0);
+
+  const nextImg = (len) => setHanoiIdx((i) => (i + 1) % len);
+  const prevImg = (len) => setHanoiIdx((i) => (i - 1 + len) % len);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-slate-800">
@@ -240,7 +244,7 @@ export default function Portfolio() {
                       )}
                     </div>
 
-                    {/* Right: single image carousel with next-arrow */}
+                    {/* Right: image carousel with left/right arrows */}
                     <div className="md:col-span-1">
                       {p.images && p.images.length >= 2 && (
                         <div className="flex flex-col items-center">
@@ -255,15 +259,25 @@ export default function Portfolio() {
                                 }`}
                               />
                             ))}
+                            {/* Left arrow */}
+                            <button
+                              type="button"
+                              onClick={() => prevImg(p.images.length)}
+                              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-blue-700 border border-blue-200 rounded-full p-1 shadow-md"
+                              aria-label="Show previous image"
+                            >
+                              <ArrowLeft className="h-5 w-5" />
+                            </button>
+                            {/* Right arrow */}
+                            <button
+                              type="button"
+                              onClick={() => nextImg(p.images.length)}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-blue-700 border border-blue-200 rounded-full p-1 shadow-md"
+                              aria-label="Show next image"
+                            >
+                              <ArrowRight className="h-5 w-5 arrow-slide" />
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => setHanoiIdx((hanoiIdx + 1) % p.images.length)}
-                            className="mt-3 inline-flex items-center justify-center h-8 w-8 rounded-full border border-blue-200 text-blue-700 hover:bg-blue-50"
-                            aria-label="Show next image"
-                          >
-                            <ArrowRight className="h-5 w-5 arrow-slide" />
-                          </button>
                           <div className="mt-2 flex gap-1.5">
                             {p.images.map((_, i) => (
                               <span
