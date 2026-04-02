@@ -61,7 +61,7 @@ const PROFILE = {
   role: "Systems Engineering & Computer Science Major @ UVA",
   headshot: "/headshot.jpg",
   email: "bradleyelder24@gmail.com",
-  github: "https://github.com/Belder21",
+  github: "https://github.com/BradleyE99?tab=repositories",
   linkedin: "https://www.linkedin.com/in/bradleyjelder21",
   resume: "/Resume_Elder_Bradley_v12.pdf",
   aboutIntro:
