@@ -63,7 +63,7 @@ const PROFILE = {
   email: "bradleyelder24@gmail.com",
   github: "https://github.com/Belder21",
   linkedin: "https://www.linkedin.com/in/bradleyjelder21",
-  resume: "/Bradley_Elder_Resume.pdf",
+  resume: "/Resume_Elder_Bradley_v12.pdf",
   aboutIntro:
     "Second-year Systems Engineering student at UVA, seeking summer internship opportunities. I like connecting people, processes, and technology to design solutions that work in the real world.",
   aboutBullets: [
