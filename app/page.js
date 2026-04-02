@@ -172,7 +172,10 @@ export default function Portfolio() {
             <img src={PROFILE.headshot} alt={`${PROFILE.name} headshot`} className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover border border-blue-100 shadow-sm" />
           </div>
           <div className="md:col-span-2">
-            <p className="text-sm uppercase tracking-wider text-blue-700/70">{PROFILE.role}</p>
+            <p className="text-sm uppercase tracking-wider font-semibold">
+              <span className="text-[#232D4B]">Systems Engineering & Computer Science Major</span>{" "}
+              <span className="text-[#E57200]">@ UVA</span>
+            </p>
             <h1 className="mt-1 text-4xl md:text-5xl font-extrabold leading-tight text-blue-900">{PROFILE.name}</h1>
             <p className="mt-4 text-slate-700 leading-relaxed max-w-prose">{PROFILE.aboutIntro}</p>
             <ul className="mt-3 grid gap-2 text-slate-700 max-w-prose list-disc list-inside">
