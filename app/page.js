@@ -119,6 +119,7 @@ export default function Portfolio() {
   const [hanoiIdx, setHanoiIdx] = useState(0);
   const [theme, setTheme] = useState("light");
   const [videoLoadError, setVideoLoadError] = useState({});
+  const [videoSourceErrorCount, setVideoSourceErrorCount] = useState({});
   const isDark = theme === "dark";
 
   useEffect(() => {
@@ -143,6 +144,26 @@ export default function Portfolio() {
     if (src.endsWith(".webm")) return "video/webm";
     if (src.endsWith(".mov")) return "video/quicktime";
     return "video/mp4";
+  };
+  const clearVideoError = (title) => {
+    setVideoLoadError((prev) => (prev[title] ? { ...prev, [title]: false } : prev));
+    setVideoSourceErrorCount((prev) => (prev[title] ? { ...prev, [title]: 0 } : prev));
+  };
+  const handleVideoSourceError = (title, totalSources) => {
+    if (!totalSources) return;
+    setVideoSourceErrorCount((prev) => {
+      const nextCount = (prev[title] || 0) + 1;
+      if (nextCount >= totalSources) {
+        setVideoLoadError((prevLoadError) => ({
+          ...prevLoadError,
+          [title]: true,
+        }));
+      }
+      return {
+        ...prev,
+        [title]: nextCount,
+      };
+    });
   };
 
   return (
@@ -431,16 +452,16 @@ export default function Portfolio() {
                           className={`w-full rounded-2xl border ${isDark ? "border-slate-700 bg-slate-900" : "border-blue-100 bg-slate-100"}`}
                           controls
                           playsInline
-                          poster={p.poster || "/thumbnail.png"}
-                          onError={() =>
-                            setVideoLoadError((prev) => ({
-                              ...prev,
-                              [p.title]: true,
-                            }))
-                          }
+                          poster={p.poster}
+                          onLoadedData={() => clearVideoError(p.title)}
                         >
                           {(p.demoSources || [p.demo]).map((src) => (
-                            <source key={src} src={src} type={getVideoMimeType(src)} />
+                            <source
+                              key={src}
+                              src={src}
+                              type={getVideoMimeType(src)}
+                              onError={() => handleVideoSourceError(p.title, (p.demoSources || [p.demo]).filter(Boolean).length)}
+                            />
                           ))}
                           Your browser does not support the video tag.
                         </video>
