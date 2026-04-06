@@ -24,7 +24,7 @@ const PROJECTS = [
     stack: ["Django", "AWS EB", "S3", "PostgreSQL", "OAuth2"],
     blurb:
       "Developed a web application to promote smaller charities across the United States, enabling more personalized, one-on-one engagement with donors.",
-    demo: "/gc-demo.mp4",
+    demoSources: ["/gc-demo.mp4", "/gc-demo.webm", "/gc-demo.mov"],
     poster: "/gc-poster.jpg",
     highlights: [
       "Implemented Epic OAuth2 authentication and integrated FHIR APIs to fetch patient medical observation data",
@@ -139,6 +139,11 @@ export default function Portfolio() {
   const nextImg = (len) => setHanoiIdx((i) => (i + 1) % len);
   const prevImg = (len) => setHanoiIdx((i) => (i - 1 + len) % len);
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const getVideoMimeType = (src) => {
+    if (src.endsWith(".webm")) return "video/webm";
+    if (src.endsWith(".mov")) return "video/quicktime";
+    return "video/mp4";
+  };
 
   return (
     <div
@@ -421,7 +426,7 @@ export default function Portfolio() {
                         ))}
                     </ul>
                     <div className="mt-4 flex flex-col gap-3">
-                      {p.demo && /\.mp4($|\?)/i.test(p.demo) && !videoLoadError[p.title] ? (
+                      {(p.demoSources?.length || (p.demo && /\.mp4($|\?)/i.test(p.demo))) && !videoLoadError[p.title] ? (
                         <video
                           className={`w-full rounded-2xl border ${isDark ? "border-slate-700 bg-slate-900" : "border-blue-100 bg-slate-100"}`}
                           controls
@@ -434,10 +439,12 @@ export default function Portfolio() {
                             }))
                           }
                         >
-                          <source src={p.demo} type="video/mp4" />
+                          {(p.demoSources || [p.demo]).map((src) => (
+                            <source key={src} src={src} type={getVideoMimeType(src)} />
+                          ))}
                           Your browser does not support the video tag.
                         </video>
-                      ) : p.demo && /\.mp4($|\?)/i.test(p.demo) && videoLoadError[p.title] ? (
+                      ) : (p.demoSources?.length || (p.demo && /\.mp4($|\?)/i.test(p.demo))) && videoLoadError[p.title] ? (
                           <div
                             className={`rounded-2xl border p-3 text-sm ${
                               isDark ? "border-slate-700 bg-slate-900 text-slate-300" : "border-blue-100 bg-slate-50 text-slate-700"
@@ -446,6 +453,10 @@ export default function Portfolio() {
                             Demo video is unavailable right now. Add
                             {" "}
                             <code>/public/gc-demo.mp4</code>
+                            {", "}
+                            <code>/public/gc-demo.webm</code>
+                            {" or "}
+                            <code>/public/gc-demo.mov</code>
                             {" "}
                             to enable playback.
                           </div>
