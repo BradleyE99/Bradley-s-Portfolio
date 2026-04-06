@@ -118,6 +118,7 @@ export default function Portfolio() {
   const [open, setOpen] = useState(false);
   const [hanoiIdx, setHanoiIdx] = useState(0);
   const [theme, setTheme] = useState("light");
+  const [videoLoadError, setVideoLoadError] = useState({});
   const isDark = theme === "dark";
 
   useEffect(() => {
@@ -420,23 +421,39 @@ export default function Portfolio() {
                         ))}
                     </ul>
                     <div className="mt-4 flex flex-col gap-3">
-                      {p.demo && /\.mp4($|\?)/i.test(p.demo) ? (
+                      {p.demo && /\.mp4($|\?)/i.test(p.demo) && !videoLoadError[p.title] ? (
                         <video
                           className={`w-full rounded-2xl border ${isDark ? "border-slate-700 bg-slate-900" : "border-blue-100 bg-slate-100"}`}
                           controls
                           playsInline
                           poster={p.poster || "/thumbnail.png"}
+                          onError={() =>
+                            setVideoLoadError((prev) => ({
+                              ...prev,
+                              [p.title]: true,
+                            }))
+                          }
                         >
                           <source src={p.demo} type="video/mp4" />
                           Your browser does not support the video tag.
                         </video>
-                      ) : (
-                        p.demo && (
-                          <a href={p.demo} className="inline-flex items-center gap-1 text-sm text-blue-800 underline hover:no-underline">
-                            <ExternalLink className="h-4 w-4" /> Live
-                          </a>
-                        )
-                      )}
+                      ) : p.demo && /\.mp4($|\?)/i.test(p.demo) && videoLoadError[p.title] ? (
+                          <div
+                            className={`rounded-2xl border p-3 text-sm ${
+                              isDark ? "border-slate-700 bg-slate-900 text-slate-300" : "border-blue-100 bg-slate-50 text-slate-700"
+                            }`}
+                          >
+                            Demo video is unavailable right now. Add
+                            {" "}
+                            <code>/public/gc-demo.mp4</code>
+                            {" "}
+                            to enable playback.
+                          </div>
+                      ) : p.demo ? (
+                        <a href={p.demo} className="inline-flex items-center gap-1 text-sm text-blue-800 underline hover:no-underline">
+                          <ExternalLink className="h-4 w-4" /> Live
+                        </a>
+                      ) : null}
                       {p.repo && (
                         <a href={p.repo} className="inline-flex items-center gap-1 text-sm text-blue-800 underline hover:no-underline">
                           <Github className="h-4 w-4" /> Repo

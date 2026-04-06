@@ -100,7 +100,7 @@ const SKILLS = {
     { name: "Python", source: "UVA Coursework" },
     { name: "Java", source: "UVA Coursework" },
     { name: "C#", source: "VR Towers of Hanoi Research" },
-    { name: "SQL", source: "Generative Charities" },
+    { name: "SQL", source: "Generative Charities, UVA Coursework" },
   ],
   Frameworks: [
     { name: "Django", source: "Generative Charities" },
