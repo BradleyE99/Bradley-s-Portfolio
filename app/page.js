@@ -515,9 +515,11 @@ export default function Portfolio() {
                 <h3 className={`font-semibold ${isDark ? "text-slate-100" : "text-blue-900"}`}>{cat}</h3>
                 <ul className={`mt-3 space-y-2 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                   {items.map(({ name, source }) => (
-                    <li key={name} className="flex justify-between gap-3">
-                      <span>- {name}</span>
-                      <span className={`text-xs italic ${isDark ? "text-slate-400" : "text-slate-500"}`}>({source})</span>
+                    <li key={name} className="flex items-start gap-3">
+                      <span className="shrink-0">- {name}</span>
+                      <span className={`ml-auto text-right text-xs italic ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                        ({source})
+                      </span>
                     </li>
                   ))}
                 </ul>
