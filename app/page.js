@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Github,
   Linkedin,
@@ -13,9 +13,9 @@ import {
   Briefcase,
   ArrowRight,
   ArrowLeft,
+  Moon,
+  Sun,
 } from "lucide-react";
-
-// ---------- DATA ----------
 
 const PROJECTS = [
   {
@@ -52,7 +52,7 @@ const PROJECTS = [
       "Developed an interactive Towers of Hanoi game in Unity (C#) to study gesture-based interaction",
     ],
     images: ["/hanoi-1.jpg", "/hanoi-2.jpg"],
-    layout: "right-images", // only this project gets the side-by-side layout
+    layout: "right-images",
   },
 ];
 
@@ -71,7 +71,6 @@ const PROFILE = {
     "Hands-on with Django, AWS EB, S3, SQL, and Python",
     "Interested in data analytics, Tech consulting, data science, and software engineering",
   ],
-  // NOTE: already a paragraph (no bullet!)
   objectives: [
     "Seeking a Summer 2026 internship to apply Systems Engineering and Computer Science skills in Data Analytics, Data Science, Software Engineering, or Technology Consulting.",
   ],
@@ -86,7 +85,7 @@ const JOBS = [
       "During my internship at Generative Charities, I applied both technical and analytical skills to support a nonprofit startup focused on empowering smaller U.S. charities.",
     bullets: [
       "Conducted systems analysis to identify strategies that help local charities expand their reach and provide more personalized support to people in need.",
-      "Built and deployed a web platform using Python, HTML, and Amazon Web Services (AWS), aligning technical solutions with the organization’s mission and values.",
+      "Built and deployed a web platform using Python, HTML, and Amazon Web Services (AWS), aligning technical solutions with the organization's mission and values.",
       "Utilized open.epic to pull medical data using APIs.",
     ],
     tech: ["Django", "AWS EB", "S3", "PostgreSQL", "Python", "GitHub"],
@@ -94,7 +93,6 @@ const JOBS = [
   },
 ];
 
-/** 1) Skills with sources */
 const SKILLS = {
   Languages: [
     { name: "Python", source: "UVA Coursework" },
@@ -119,33 +117,88 @@ const SKILLS = {
 export default function Portfolio() {
   const [open, setOpen] = useState(false);
   const [hanoiIdx, setHanoiIdx] = useState(0);
+  const [theme, setTheme] = useState("light");
+  const isDark = theme === "dark";
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light" || savedTheme === "dark") {
+      setTheme(savedTheme);
+      return;
+    }
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(prefersDark ? "dark" : "light");
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   const nextImg = (len) => setHanoiIdx((i) => (i + 1) % len);
   const prevImg = (len) => setHanoiIdx((i) => (i - 1 + len) % len);
+  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-slate-800">
-      {/* Header (dark blue) */}
-      <header className="sticky top-0 z-30 bg-blue-900/95 backdrop-blur border-b border-blue-800 shadow-[0_1px_0_0_rgba(255,255,255,0.06)]">
+    <div
+      className={`min-h-screen bg-gradient-to-b ${
+        isDark ? "from-slate-950 to-slate-900 text-slate-100" : "from-blue-50 to-white text-slate-800"
+      }`}
+    >
+      <header
+        className={`sticky top-0 z-30 backdrop-blur border-b shadow-[0_1px_0_0_rgba(255,255,255,0.06)] ${
+          isDark ? "bg-slate-950/95 border-slate-800" : "bg-blue-900/95 border-blue-800"
+        }`}
+      >
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between text-white">
           <a href="#home" className="flex items-center gap-2 font-semibold">
             <Code2 className="h-5 w-5 text-white" /> {PROFILE.name}
           </a>
-          <nav className="hidden md:flex items-center gap-6">
-            <a href="#projects" className="hover:text-blue-200">Projects</a>
-            <a href="#jobs" className="hover:text-blue-200">Jobs</a>
-            <a href="#skills" className="hover:text-blue-200">Skills</a>
-            <a href="#contact" className="hover:text-blue-200">Contact</a>
-            <a href={PROFILE.resume} className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border border-white/30 bg-white/10 hover:bg-white/20">
-              <Download className="h-4 w-4" /> Resume
-            </a>
-          </nav>
-          <button className="md:hidden p-2 text-white" onClick={() => setOpen(!open)} aria-label="Toggle menu">
-            {open ? <X /> : <Menu />}
-          </button>
+          <div className="flex items-center gap-2">
+            <nav className="hidden md:flex items-center gap-6">
+              <a href="#projects" className={isDark ? "hover:text-slate-300" : "hover:text-blue-200"}>
+                Projects
+              </a>
+              <a href="#jobs" className={isDark ? "hover:text-slate-300" : "hover:text-blue-200"}>
+                Jobs
+              </a>
+              <a href="#skills" className={isDark ? "hover:text-slate-300" : "hover:text-blue-200"}>
+                Skills
+              </a>
+              <a href="#contact" className={isDark ? "hover:text-slate-300" : "hover:text-blue-200"}>
+                Contact
+              </a>
+              <a
+                href={PROFILE.resume}
+                className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border border-white/30 bg-white/10 hover:bg-white/20"
+              >
+                <Download className="h-4 w-4" /> Resume
+              </a>
+            </nav>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className={`inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border transition-colors ${
+                isDark
+                  ? "border-slate-600 bg-slate-800 text-slate-100 hover:bg-slate-700"
+                  : "border-white/30 bg-white/10 text-white hover:bg-white/20"
+              }`}
+              aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              <span className="hidden sm:inline">{isDark ? "Light" : "Dark"}</span>
+            </button>
+            <button className="md:hidden p-2 text-white" onClick={() => setOpen(!open)} aria-label="Toggle menu">
+              {open ? <X /> : <Menu />}
+            </button>
+          </div>
         </div>
         {open && (
-          <div className="md:hidden border-t border-blue-800 bg-blue-900/98 text-white">
+          <div
+            className={`md:hidden border-t text-white ${
+              isDark ? "border-slate-800 bg-slate-950/98" : "border-blue-800 bg-blue-900/98"
+            }`}
+          >
             <div className="px-4 py-2 flex flex-col gap-2">
               {[
                 ["Projects", "#projects"],
@@ -153,11 +206,19 @@ export default function Portfolio() {
                 ["Skills", "#skills"],
                 ["Contact", "#contact"],
               ].map(([label, href]) => (
-                <a key={label} href={href} onClick={() => setOpen(false)} className="py-2 hover:text-blue-200">
+                <a
+                  key={label}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className={`py-2 ${isDark ? "hover:text-slate-300" : "hover:text-blue-200"}`}
+                >
                   {label}
                 </a>
               ))}
-              <a href={PROFILE.resume} className="py-2 inline-flex items-center gap-2 hover:text-blue-200">
+              <a
+                href={PROFILE.resume}
+                className={`py-2 inline-flex items-center gap-2 ${isDark ? "hover:text-slate-300" : "hover:text-blue-200"}`}
+              >
                 <Download className="h-4 w-4" /> Resume
               </a>
             </div>
@@ -165,80 +226,114 @@ export default function Portfolio() {
         )}
       </header>
 
-      {/* Hero */}
       <section id="home" className="mx-auto max-w-6xl px-4 py-16">
         <div className="grid md:grid-cols-3 gap-10 items-start">
           <div className="md:col-span-1 flex justify-center">
-            <img src={PROFILE.headshot} alt={`${PROFILE.name} headshot`} className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover border border-blue-100 shadow-sm" />
+            <img
+              src={PROFILE.headshot}
+              alt={`${PROFILE.name} headshot`}
+              className={`w-40 h-40 md:w-56 md:h-56 rounded-full object-cover border shadow-sm ${
+                isDark ? "border-slate-700" : "border-blue-100"
+              }`}
+            />
           </div>
           <div className="md:col-span-2">
             <p className="text-sm uppercase tracking-wider font-semibold">
-              <span className="text-[#232D4B]">Systems Engineering & Computer Science Major</span>{" "}
-              <span className="text-[#E57200]">@ UVA</span>
+              <span className={isDark ? "text-slate-200" : "text-[#232D4B]"}>Systems Engineering & Computer Science Major</span>{" "}
+              <span className={isDark ? "text-amber-400" : "text-[#E57200]"}>@ UVA</span>
             </p>
-            <h1 className="mt-1 text-4xl md:text-5xl font-extrabold leading-tight text-blue-900">{PROFILE.name}</h1>
-            <p className="mt-4 text-slate-700 leading-relaxed max-w-prose">{PROFILE.aboutIntro}</p>
-            <ul className="mt-3 grid gap-2 text-slate-700 max-w-prose list-disc list-inside">
+            <h1 className={`mt-1 text-4xl md:text-5xl font-extrabold leading-tight ${isDark ? "text-slate-100" : "text-blue-900"}`}>
+              {PROFILE.name}
+            </h1>
+            <p className={`mt-4 leading-relaxed max-w-prose ${isDark ? "text-slate-300" : "text-slate-700"}`}>{PROFILE.aboutIntro}</p>
+            <ul className={`mt-3 grid gap-2 max-w-prose list-disc list-inside ${isDark ? "text-slate-300" : "text-slate-700"}`}>
               {PROFILE.aboutBullets.map((b) => (
                 <li key={b}>{b}</li>
               ))}
             </ul>
 
-            {/* 2) Objectives is a paragraph (no bullet) */}
-            <div className="mt-6 rounded-2xl border border-blue-100 bg-white/70 p-4">
-              <h3 className="text-sm font-semibold text-blue-900 uppercase tracking-wider">Objectives</h3>
-              <p className="mt-2 text-slate-700">{PROFILE.objectives[0]}</p>
+            <div className={`mt-6 rounded-2xl border p-4 ${isDark ? "border-slate-700 bg-slate-800/70" : "border-blue-100 bg-white/70"}`}>
+              <h3 className={`text-sm font-semibold uppercase tracking-wider ${isDark ? "text-slate-100" : "text-blue-900"}`}>Objectives</h3>
+              <p className={`mt-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>{PROFILE.objectives[0]}</p>
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <a href={`mailto:${PROFILE.email}`} className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-white/50 bg-blue-900 text-white hover:bg-blue-800">
+              <a
+                href={`mailto:${PROFILE.email}`}
+                className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border text-white ${
+                  isDark ? "border-slate-700 bg-slate-700 hover:bg-slate-600" : "border-white/50 bg-blue-900 hover:bg-blue-800"
+                }`}
+              >
                 <Mail className="h-4 w-4" /> Email
               </a>
-              <a href={PROFILE.github} className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-blue-200 bg-white hover:bg-blue-50">
-                <Github className="h-4 w-4 text-blue-700" /> GitHub
+              <a
+                href={PROFILE.github}
+                className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border ${
+                  isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
+                }`}
+              >
+                <Github className={`h-4 w-4 ${isDark ? "text-slate-200" : "text-blue-700"}`} /> GitHub
               </a>
-              <a href={PROFILE.linkedin} className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-blue-200 bg-white hover:bg-blue-50">
-                <Linkedin className="h-4 w-4 text-blue-700" /> LinkedIn
+              <a
+                href={PROFILE.linkedin}
+                className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border ${
+                  isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
+                }`}
+              >
+                <Linkedin className={`h-4 w-4 ${isDark ? "text-slate-200" : "text-blue-700"}`} /> LinkedIn
               </a>
-              <a href={PROFILE.resume} className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-blue-200 bg-white hover:bg-blue-50">
-                <Download className="h-4 w-4 text-blue-700" /> Resume
+              <a
+                href={PROFILE.resume}
+                className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border ${
+                  isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
+                }`}
+              >
+                <Download className={`h-4 w-4 ${isDark ? "text-slate-200" : "text-blue-700"}`} /> Resume
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Projects band */}
-      <section id="projects" className="w-full bg-white border-y border-blue-100">
+      <section id="projects" className={`w-full border-y ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100"}`}>
         <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className="text-2xl font-bold text-blue-900">Projects</h2>
+          <h2 className={`text-2xl font-bold ${isDark ? "text-slate-100" : "text-blue-900"}`}>Projects</h2>
           <div className="mt-6 flex flex-col gap-6">
             {PROJECTS.map((p) => (
               <article
                 key={p.title}
-                className="w-full rounded-3xl border border-blue-100 bg-white p-6 shadow-sm transition-all transform-gpu hover:-translate-y-1 hover:shadow-2xl hover:border-blue-300"
+                className={`w-full rounded-3xl border p-6 shadow-sm transition-all transform-gpu hover:-translate-y-1 hover:shadow-2xl ${
+                  isDark ? "border-slate-700 bg-slate-800 hover:border-slate-500" : "border-blue-100 bg-white hover:border-blue-300"
+                }`}
               >
-                {/* SPECIAL LAYOUT ONLY FOR HANOI */}
                 {p.layout === "right-images" ? (
                   <div className="grid md:grid-cols-3 gap-6 items-start">
-                    {/* Left: text */}
                     <div className="md:col-span-2">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <h3 className="text-lg font-semibold text-blue-900">{p.title}</h3>
-                          <p className="text-xs text-blue-700/70">{p.period}</p>
+                          <h3 className={`text-lg font-semibold ${isDark ? "text-slate-100" : "text-blue-900"}`}>{p.title}</h3>
+                          <p className={`text-xs ${isDark ? "text-slate-400" : "text-blue-700/70"}`}>{p.period}</p>
                         </div>
                       </div>
-                      <p className="mt-3 text-sm text-slate-700">{p.blurb}</p>
+                      <p className={`mt-3 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>{p.blurb}</p>
                       <div className="mt-3 flex flex-wrap gap-2">
                         {p.stack.map((t) => (
-                          <span key={t} className="text-xs border border-blue-200 bg-blue-50 text-blue-800 rounded-xl px-2 py-1">{t}</span>
+                          <span
+                            key={t}
+                            className={`text-xs border rounded-xl px-2 py-1 ${
+                              isDark ? "border-slate-600 bg-slate-700 text-slate-100" : "border-blue-200 bg-blue-50 text-blue-800"
+                            }`}
+                          >
+                            {t}
+                          </span>
                         ))}
                       </div>
-                      <ul className="mt-3 list-disc list-inside text-sm text-slate-700 space-y-1">
-                        {p.highlights.filter((h) => h.trim() !== "").map((h, i) => (
-                          <li key={i}>{h}</li>
-                        ))}
+                      <ul className={`mt-3 list-disc list-inside text-sm space-y-1 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                        {p.highlights
+                          .filter((h) => h.trim() !== "")
+                          .map((h, i) => (
+                            <li key={i}>{h}</li>
+                          ))}
                       </ul>
                       {p.repo && (
                         <a href={p.repo} className="mt-3 inline-flex items-center gap-1 text-sm text-blue-800 underline hover:no-underline">
@@ -247,11 +342,10 @@ export default function Portfolio() {
                       )}
                     </div>
 
-                    {/* Right: image carousel with left/right arrows */}
                     <div className="md:col-span-1">
                       {p.images && p.images.length >= 2 && (
                         <div className="flex flex-col items-center">
-                          <div className="relative w-64 md:w-72 aspect-square overflow-hidden rounded-2xl border border-blue-100">
+                          <div className={`relative w-64 md:w-72 aspect-square overflow-hidden rounded-2xl border ${isDark ? "border-slate-700" : "border-blue-100"}`}>
                             {p.images.map((src, i) => (
                               <img
                                 key={src}
@@ -262,20 +356,22 @@ export default function Portfolio() {
                                 }`}
                               />
                             ))}
-                            {/* Left arrow */}
                             <button
                               type="button"
                               onClick={() => prevImg(p.images.length)}
-                              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-blue-700 border border-blue-200 rounded-full p-1 shadow-md"
+                              className={`absolute left-2 top-1/2 -translate-y-1/2 border rounded-full p-1 shadow-md ${
+                                isDark ? "bg-slate-800/90 hover:bg-slate-700 text-slate-100 border-slate-600" : "bg-white/70 hover:bg-white text-blue-700 border-blue-200"
+                              }`}
                               aria-label="Show previous image"
                             >
                               <ArrowLeft className="h-5 w-5" />
                             </button>
-                            {/* Right arrow */}
                             <button
                               type="button"
                               onClick={() => nextImg(p.images.length)}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-blue-700 border border-blue-200 rounded-full p-1 shadow-md"
+                              className={`absolute right-2 top-1/2 -translate-y-1/2 border rounded-full p-1 shadow-md ${
+                                isDark ? "bg-slate-800/90 hover:bg-slate-700 text-slate-100 border-slate-600" : "bg-white/70 hover:bg-white text-blue-700 border-blue-200"
+                              }`}
                               aria-label="Show next image"
                             >
                               <ArrowRight className="h-5 w-5 arrow-slide" />
@@ -285,7 +381,9 @@ export default function Portfolio() {
                             {p.images.map((_, i) => (
                               <span
                                 key={i}
-                                className={`h-1.5 w-1.5 rounded-full ${i === hanoiIdx ? "bg-blue-700" : "bg-blue-200"}`}
+                                className={`h-1.5 w-1.5 rounded-full ${
+                                  i === hanoiIdx ? (isDark ? "bg-slate-200" : "bg-blue-700") : isDark ? "bg-slate-600" : "bg-blue-200"
+                                }`}
                               />
                             ))}
                           </div>
@@ -294,28 +392,41 @@ export default function Portfolio() {
                     </div>
                   </div>
                 ) : (
-                  // DEFAULT LAYOUT FOR OTHER PROJECTS
                   <>
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h3 className="text-lg font-semibold text-blue-900">{p.title}</h3>
-                        <p className="text-xs text-blue-700/70">{p.period}</p>
+                        <h3 className={`text-lg font-semibold ${isDark ? "text-slate-100" : "text-blue-900"}`}>{p.title}</h3>
+                        <p className={`text-xs ${isDark ? "text-slate-400" : "text-blue-700/70"}`}>{p.period}</p>
                       </div>
                     </div>
-                    <p className="mt-3 text-sm text-slate-700">{p.blurb}</p>
+                    <p className={`mt-3 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>{p.blurb}</p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {p.stack.map((t) => (
-                        <span key={t} className="text-xs border border-blue-200 bg-blue-50 text-blue-800 rounded-xl px-2 py-1">{t}</span>
+                        <span
+                          key={t}
+                          className={`text-xs border rounded-xl px-2 py-1 ${
+                            isDark ? "border-slate-600 bg-slate-700 text-slate-100" : "border-blue-200 bg-blue-50 text-blue-800"
+                          }`}
+                        >
+                          {t}
+                        </span>
                       ))}
                     </div>
-                    <ul className="mt-3 list-disc list-inside text-sm text-slate-700 space-y-1">
-                      {p.highlights.filter((h) => h.trim() !== "").map((h, i) => (
-                        <li key={i}>{h}</li>
-                      ))}
+                    <ul className={`mt-3 list-disc list-inside text-sm space-y-1 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                      {p.highlights
+                        .filter((h) => h.trim() !== "")
+                        .map((h, i) => (
+                          <li key={i}>{h}</li>
+                        ))}
                     </ul>
                     <div className="mt-4 flex flex-col gap-3">
                       {p.demo && /\.mp4($|\?)/i.test(p.demo) ? (
-                        <video className="w-full rounded-2xl border border-blue-100 bg-slate-100" controls playsInline poster={p.poster || "/thumbnail.png"}>
+                        <video
+                          className={`w-full rounded-2xl border ${isDark ? "border-slate-700 bg-slate-900" : "border-blue-100 bg-slate-100"}`}
+                          controls
+                          playsInline
+                          poster={p.poster || "/thumbnail.png"}
+                        >
                           <source src={p.demo} type="video/mp4" />
                           Your browser does not support the video tag.
                         </video>
@@ -340,19 +451,25 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* 3) Jobs band (different background) */}
-      <section id="jobs" className="w-full bg-blue-50/70 border-y border-blue-100">
+      <section id="jobs" className={`w-full border-y ${isDark ? "bg-slate-950/70 border-slate-800" : "bg-blue-50/70 border-blue-100"}`}>
         <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className="text-2xl font-bold text-blue-900 flex items-center gap-2">
-            <Briefcase className="h-5 w-5 text-blue-800" /> Jobs
+          <h2 className={`text-2xl font-bold flex items-center gap-2 ${isDark ? "text-slate-100" : "text-blue-900"}`}>
+            <Briefcase className={`h-5 w-5 ${isDark ? "text-slate-300" : "text-blue-800"}`} /> Jobs
           </h2>
           <div className="mt-6 grid gap-6">
             {JOBS.map((j) => (
-              <article key={`${j.company}-${j.role}`} className="rounded-3xl border border-blue-100 bg-white p-5 shadow-sm transition-all transform-gpu hover:-translate-y-1 hover:shadow-2xl hover:border-blue-300">
+              <article
+                key={`${j.company}-${j.role}`}
+                className={`rounded-3xl border p-5 shadow-sm transition-all transform-gpu hover:-translate-y-1 hover:shadow-2xl ${
+                  isDark ? "border-slate-700 bg-slate-800 hover:border-slate-500" : "border-blue-100 bg-white hover:border-blue-300"
+                }`}
+              >
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <div>
-                    <h3 className="text-lg font-semibold text-blue-900">{j.role} · {j.company}</h3>
-                    <p className="text-xs text-blue-700/70">{j.period}</p>
+                    <h3 className={`text-lg font-semibold ${isDark ? "text-slate-100" : "text-blue-900"}`}>
+                      {j.role} - {j.company}
+                    </h3>
+                    <p className={`text-xs ${isDark ? "text-slate-400" : "text-blue-700/70"}`}>{j.period}</p>
                   </div>
                   {j.link && (
                     <a href={j.link} className="inline-flex items-center gap-1 text-sm text-blue-800 underline hover:no-underline">
@@ -360,15 +477,22 @@ export default function Portfolio() {
                     </a>
                   )}
                 </div>
-                <p className="mt-3 text-sm text-slate-700">{j.summary}</p>
-                <ul className="mt-3 list-disc list-inside text-sm text-slate-700 space-y-1">
+                <p className={`mt-3 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>{j.summary}</p>
+                <ul className={`mt-3 list-disc list-inside text-sm space-y-1 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                   {j.bullets.map((b, i) => (
                     <li key={i}>{b}</li>
                   ))}
                 </ul>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {j.tech.map((t) => (
-                    <span key={t} className="text-xs border border-blue-200 bg-blue-50 text-blue-800 rounded-xl px-2 py-1">{t}</span>
+                    <span
+                      key={t}
+                      className={`text-xs border rounded-xl px-2 py-1 ${
+                        isDark ? "border-slate-600 bg-slate-700 text-slate-100" : "border-blue-200 bg-blue-50 text-blue-800"
+                      }`}
+                    >
+                      {t}
+                    </span>
                   ))}
                 </div>
               </article>
@@ -377,19 +501,23 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* 3) Skills band (back to white) */}
-      <section id="skills" className="w-full bg-white border-y border-blue-100">
+      <section id="skills" className={`w-full border-y ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100"}`}>
         <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className="text-2xl font-bold text-blue-900">Skills</h2>
+          <h2 className={`text-2xl font-bold ${isDark ? "text-slate-100" : "text-blue-900"}`}>Skills</h2>
           <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {Object.entries(SKILLS).map(([cat, items]) => (
-              <div key={cat} className="rounded-3xl border border-blue-100 bg-white p-5 shadow-sm transition-all transform-gpu hover:-translate-y-1 hover:shadow-2xl hover:border-blue-300">
-                <h3 className="font-semibold text-blue-900">{cat}</h3>
-                <ul className="mt-3 space-y-2 text-sm text-slate-700">
+              <div
+                key={cat}
+                className={`rounded-3xl border p-5 shadow-sm transition-all transform-gpu hover:-translate-y-1 hover:shadow-2xl ${
+                  isDark ? "border-slate-700 bg-slate-800 hover:border-slate-500" : "border-blue-100 bg-white hover:border-blue-300"
+                }`}
+              >
+                <h3 className={`font-semibold ${isDark ? "text-slate-100" : "text-blue-900"}`}>{cat}</h3>
+                <ul className={`mt-3 space-y-2 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                   {items.map(({ name, source }) => (
                     <li key={name} className="flex justify-between gap-3">
-                      <span>• {name}</span>
-                      <span className="text-xs text-slate-500 italic">({source})</span>
+                      <span>- {name}</span>
+                      <span className={`text-xs italic ${isDark ? "text-slate-400" : "text-slate-500"}`}>({source})</span>
                     </li>
                   ))}
                 </ul>
@@ -399,33 +527,56 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* 3) Contact band (soft blue) */}
-      <section id="contact" className="w-full bg-blue-50/70 border-y border-blue-100">
+      <section id="contact" className={`w-full border-y ${isDark ? "bg-slate-950/70 border-slate-800" : "bg-blue-50/70 border-blue-100"}`}>
         <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className="text-2xl font-bold text-blue-900">Contact</h2>
-          <p className="mt-2 text-slate-700">Open to internships and research collaborations.</p>
+          <h2 className={`text-2xl font-bold ${isDark ? "text-slate-100" : "text-blue-900"}`}>Contact</h2>
+          <p className={`mt-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>Open to internships and research collaborations.</p>
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <a href={`mailto:${PROFILE.email}`} className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-blue-200 bg-white hover:bg-blue-50">
-              <Mail className="h-4 w-4 text-blue-700" /> {PROFILE.email}
+            <a
+              href={`mailto:${PROFILE.email}`}
+              className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border ${
+                isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
+              }`}
+            >
+              <Mail className={`h-4 w-4 ${isDark ? "text-slate-200" : "text-blue-700"}`} /> {PROFILE.email}
             </a>
-            <a href={PROFILE.github} className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-blue-200 bg-white hover:bg-blue-50">
-              <Github className="h-4 w-4 text-blue-700" /> {PROFILE.github.replace(/^https?:\/\//, "")}
+            <a
+              href={PROFILE.github}
+              className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border ${
+                isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
+              }`}
+            >
+              <Github className={`h-4 w-4 ${isDark ? "text-slate-200" : "text-blue-700"}`} /> {PROFILE.github.replace(/^https?:\/\//, "")}
             </a>
-            <a href={PROFILE.linkedin} className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 border border-blue-200 bg-white hover:bg-blue-50">
-              <Linkedin className="h-4 w-4 text-blue-700" /> {PROFILE.linkedin.replace(/^https?:\/\//, "")}
+            <a
+              href={PROFILE.linkedin}
+              className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border ${
+                isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
+              }`}
+            >
+              <Linkedin className={`h-4 w-4 ${isDark ? "text-slate-200" : "text-blue-700"}`} />{" "}
+              {PROFILE.linkedin.replace(/^https?:\/\//, "")}
             </a>
           </div>
         </div>
       </section>
 
-      <footer className="py-10 text-center text-xs text-slate-500">
-        © {new Date().getFullYear()} {PROFILE.name}
+      <footer className={`py-10 text-center text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+        (c) {new Date().getFullYear()} {PROFILE.name}
       </footer>
 
-      {/* subtle arrow motion for the carousel button */}
       <style jsx>{`
-        @keyframes arrowSlideX { from { transform: translateX(0); } to { transform: translateX(12px); } }
-        .arrow-slide { animation: arrowSlideX 0.9s ease-in-out infinite alternate; }
+        @keyframes arrowSlideX {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(12px);
+          }
+        }
+        .arrow-slide {
+          animation: arrowSlideX 0.9s ease-in-out infinite alternate;
+        }
       `}</style>
     </div>
   );
