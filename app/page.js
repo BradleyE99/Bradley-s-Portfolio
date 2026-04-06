@@ -72,7 +72,7 @@ const PROFILE = {
     "Interested in data analytics, Tech consulting, data science, and software engineering",
   ],
   objectives: [
-    "Seeking a Summer 2026 internship to apply Systems Engineering and Computer Science skills in Data Analytics, Data Science, Software Engineering, or Technology Consulting.",
+    "Computer Science and Systems Engineering double major seeking a Summer 2027 internship to apply skills in software development, algorithm design, and systems analysis methodologies toward roles in software engineering, technology consulting, or systems engineering.",
   ],
 };
 
