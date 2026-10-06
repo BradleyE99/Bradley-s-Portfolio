@@ -29,11 +29,32 @@
   --color-uva-orange-50: #fff4e8;
   --color-uva-orange-300: #f6a656;
   --color-uva-orange-700: #b35900;
+
+  /* Dark mode: "Deep Blue Waters". The four base values are exact; the rest are
+     small steps between them for cards, borders, and hover states.
+     Contrast on #16425b: #d9dcd6 text 7.7:1, #81c3d7 links 5.5:1, #afc3cc muted 5.9:1.
+     #3a7ca5 is only a surface/border color: white text on it is 4.6:1. */
+  --color-dbw: #16425b;
+  --color-dbw-900: #0f3346;
+  --color-dbw-850: #133b52;
+  --color-dbw-750: #1a4a66;
+  --color-dbw-700: #24587a;
+  --color-dbw-650: #2f6a8f;
+  --color-dbw-600: #3a7ca5;
+  --color-dbw-300: #81c3d7;
+  --color-dbw-text: #d9dcd6;
+  --color-dbw-heading: #eef0ec;
+  --color-dbw-muted: #afc3cc;
+}
+
+html {
+  --focus-ring: var(--color-uva-orange);
 }
 
 html[data-theme="dark"] {
-  --background: #0d1220;
-  --foreground: #e2e8f0;
+  --background: #16425b;
+  --foreground: #d9dcd6;
+  --focus-ring: var(--color-dbw-300);
   color-scheme: dark;
 }
 
@@ -48,7 +69,7 @@ html {
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-uva-orange);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: 0.5rem;
 }

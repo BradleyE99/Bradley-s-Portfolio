@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Code2,
   Briefcase,
+  ArrowDown,
   Moon,
   Sun,
   Accessibility,
@@ -77,22 +78,22 @@ const TARGET_ROLES = "AI Engineering, Software Engineering, and Forward Deployed
 
 const PROFILE = {
   name: "Bradley Elder",
-  role: "Systems Engineering & Computer Science",
   headshot: "/headshot.jpg",
   email: "bradleyelder24@gmail.com",
   github: "https://github.com/BradleyE99?tab=repositories",
   linkedin: "https://www.linkedin.com/in/bradleyjelder21",
   resume: "/Resume_Elder_Bradley.pdf",
-  aboutIntro: `Third-year student at the University of Virginia, double majoring in Systems Engineering and Computer Science. I'm pursuing ${TARGET_ROLES} roles: work where I can learn what users actually need and build software that solves it.`,
-  aboutBullets: [
-    "Currently a Software Engineering Intern at Idemia Public Security, building a Boomi integration pipeline and a Microsoft Copilot Studio IT support agent",
-    "Previously built and deployed a full-stack Django platform on AWS for Generative Charities",
-    "Hands-on with Python, Java, SQL, Groovy, JavaScript, Django, AWS, and Boomi",
-    "From Fairfax, VA",
+  heroLines: [
+    "Third-year student at the University of Virginia studying Systems Engineering and Computer Science.",
+    `Interested in ${TARGET_ROLES}.`,
   ],
-  objectives: [
-    `Seeking a Summer 2027 internship in ${TARGET_ROLES}, applying software development, systems analysis, and hands-on experience with integrations and AI agents to turn user needs into working technical solutions.`,
-  ],
+  about:
+    "I’m a third-year student at UVA double majoring in Systems Engineering and Computer Science. My interests include building software and exploring how AI can solve practical problems. Outside of school and projects, I enjoy playing soccer, following Chelsea FC, running, and working out.",
+  objectives: {
+    summary: "Seeking a Summer 2027 internship in one of these roles:",
+    roles: ["AI Engineering", "Software Engineering", "Forward Deployed Engineering"],
+    detail: "I want to build integrations, AI agents, and software that start from what users actually need.",
+  },
   education: {
     school: "University of Virginia",
     location: "Charlottesville, VA",
@@ -255,48 +256,60 @@ export default function Portfolio() {
     });
   };
 
-  // Shared theme-aware class names, so every section uses the same UVA palette.
+  // Shared theme-aware class names. Light mode uses the UVA palette; dark mode uses the
+  // "Deep Blue Waters" palette (dbw-*) defined in globals.css.
   const ui = {
-    heading: isDark ? "text-slate-100" : "text-uva-navy",
-    body: isDark ? "text-slate-300" : "text-slate-700",
-    meta: isDark ? "text-slate-400" : "text-slate-600",
-    icon: isDark ? "text-uva-orange-300" : "text-uva-navy",
-    card: `rounded-3xl border shadow-sm transition-all motion-safe:transform-gpu motion-safe:hover:-translate-y-1 hover:shadow-xl hover:border-uva-orange focus-within:border-uva-orange ${
-      isDark ? "border-uva-navy-700 bg-uva-navy-800" : "border-uva-navy-100 bg-white"
+    heading: isDark ? "text-dbw-heading" : "text-uva-navy",
+    body: isDark ? "text-dbw-text" : "text-slate-700",
+    meta: isDark ? "text-dbw-muted" : "text-slate-600",
+    icon: isDark ? "text-dbw-300" : "text-uva-navy",
+    accentBorder: isDark ? "border-dbw-300" : "border-uva-orange",
+    accentTop: isDark ? "border-t-dbw-300" : "border-t-uva-orange",
+    marker: isDark ? "marker:text-dbw-300" : "marker:text-uva-orange",
+    sectionAlt: isDark ? "bg-dbw-850 border-dbw-700" : "bg-white border-uva-navy-100",
+    sectionBase: isDark ? "bg-dbw border-dbw-700" : "bg-uva-navy-50 border-uva-navy-100",
+    panel: `rounded-3xl border ${isDark ? "border-dbw-700 bg-dbw-750" : "border-uva-navy-100 bg-white"}`,
+    card: `rounded-3xl border shadow-sm transition-all motion-safe:transform-gpu motion-safe:hover:-translate-y-1 hover:shadow-xl ${
+      isDark
+        ? "border-dbw-700 bg-dbw-750 hover:border-dbw-300 focus-within:border-dbw-300"
+        : "border-uva-navy-100 bg-white hover:border-uva-orange focus-within:border-uva-orange"
     }`,
     chip: `text-xs border rounded-xl px-2 py-1 ${
-      isDark ? "border-uva-navy-600 bg-uva-navy-700 text-slate-100" : "border-uva-navy-100 bg-uva-navy-50 text-uva-navy"
+      isDark ? "border-dbw-650 bg-dbw-700 text-dbw-text" : "border-uva-navy-100 bg-uva-navy-50 text-uva-navy"
     }`,
     button: `inline-flex items-center gap-2 rounded-2xl px-4 py-2 border transition-colors ${
       isDark
-        ? "border-uva-navy-600 bg-uva-navy-800 text-slate-100 hover:border-uva-orange hover:bg-uva-navy-700"
+        ? "border-dbw-700 bg-dbw-750 text-dbw-text hover:border-dbw-300 hover:bg-dbw-700"
         : "border-uva-navy-200 bg-white text-uva-navy hover:border-uva-orange hover:bg-uva-orange-50"
     }`,
     buttonPrimary: `inline-flex items-center gap-2 rounded-2xl px-4 py-2 border text-white transition-colors ${
       isDark
-        ? "border-uva-orange bg-uva-navy-600 hover:bg-uva-navy-700"
+        ? "border-dbw-600 bg-dbw-600 hover:bg-dbw-650 hover:border-dbw-300"
         : "border-uva-navy bg-uva-navy hover:bg-uva-navy-700 hover:border-uva-orange"
     }`,
-    link: `inline-flex items-center gap-1 text-sm font-medium underline decoration-uva-orange decoration-2 underline-offset-4 hover:no-underline ${
-      isDark ? "text-uva-orange-300" : "text-uva-navy"
+    link: `inline-flex items-center gap-1 text-sm font-medium underline decoration-2 underline-offset-4 hover:no-underline ${
+      isDark ? "text-dbw-300 decoration-dbw-300" : "text-uva-navy decoration-uva-orange"
     }`,
-    navLink: "rounded-md text-white/90 hover:text-white underline-offset-8 decoration-2 decoration-uva-orange hover:underline",
+    navLink: `rounded-md text-white/90 hover:text-white underline-offset-8 decoration-2 hover:underline ${
+      isDark ? "decoration-dbw-300" : "decoration-uva-orange"
+    }`,
   };
 
   const sectionHeading = (label, Icon) => (
     <h2 className={`text-2xl font-bold flex items-center gap-2 ${ui.heading}`}>
       {Icon && <Icon className={`h-5 w-5 ${ui.icon}`} aria-hidden="true" />}
-      <span className="border-b-4 border-uva-orange pb-1">{label}</span>
+      <span className={`border-b-4 pb-1 ${ui.accentBorder}`}>{label}</span>
     </h2>
   );
 
   const renderProjectMedia = (p) => {
     const videoSources = p.demoSources || (p.demo && /\.mp4($|\?)/i.test(p.demo) ? [p.demo] : []);
+    const videoBg = isDark ? "bg-dbw-900" : "bg-uva-navy-950";
 
     if (videoSources.length && !videoLoadError[p.title]) {
       return (
         <video
-          className="h-full w-full object-contain bg-uva-navy-950"
+          className={`h-full w-full object-contain ${videoBg}`}
           controls
           playsInline
           preload="metadata"
@@ -319,7 +332,7 @@ export default function Portfolio() {
 
     if (videoSources.length) {
       return (
-        <div className="relative h-full w-full bg-uva-navy-950">
+        <div className={`relative h-full w-full ${videoBg}`}>
           {p.poster && <img src={p.poster} alt="" className="h-full w-full object-contain opacity-40" />}
           <p className="absolute inset-0 flex items-center justify-center p-4 text-center text-sm text-white">
             Demo video is unavailable right now.
@@ -334,7 +347,7 @@ export default function Portfolio() {
       return (
         <div
           className={`grid h-full w-full gap-2 p-2 ${p.images.length > 1 ? "grid-cols-2" : "grid-cols-1"} ${
-            isDark ? "bg-uva-navy-900" : "bg-uva-navy-50"
+            isDark ? "bg-dbw-850" : "bg-uva-navy-50"
           }`}
         >
           {p.images.map((src, i) => (
@@ -353,27 +366,29 @@ export default function Portfolio() {
     return (
       <div
         aria-hidden="true"
-        className="flex h-full w-full items-center justify-center bg-gradient-to-br from-uva-navy to-uva-navy-600"
+        className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${
+          isDark ? "from-dbw-900 to-dbw-700" : "from-uva-navy to-uva-navy-600"
+        }`}
       >
-        <Icon className="h-16 w-16 text-uva-orange" strokeWidth={1.5} />
+        <Icon className={`h-16 w-16 ${isDark ? "text-dbw-300" : "text-uva-orange"}`} strokeWidth={1.5} />
       </div>
     );
   };
 
   return (
     <div
-      className={`min-h-screen bg-gradient-to-b ${
-        isDark ? "from-uva-navy-950 to-uva-navy-900 text-slate-100" : "from-uva-navy-50 to-white text-slate-800"
-      }`}
+      className={
+        isDark ? "min-h-screen bg-dbw text-dbw-text" : "min-h-screen bg-gradient-to-b from-uva-navy-50 to-white text-slate-800"
+      }
     >
       <header
-        className={`sticky top-0 z-30 backdrop-blur border-b-2 border-uva-orange ${
-          isDark ? "bg-uva-navy-950/95" : "bg-uva-navy/95"
+        className={`sticky top-0 z-30 backdrop-blur border-b-2 ${
+          isDark ? "bg-dbw-900/95 border-dbw-600" : "bg-uva-navy/95 border-uva-orange"
         }`}
       >
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between text-white">
           <a href="#home" className="flex items-center gap-2 font-semibold rounded-md">
-            <Code2 className="h-5 w-5 text-uva-orange" aria-hidden="true" /> {PROFILE.name}
+            <Code2 className={`h-5 w-5 ${isDark ? "text-dbw-300" : "text-uva-orange"}`} aria-hidden="true" /> {PROFILE.name}
           </a>
           <div className="flex items-center gap-2">
             <nav aria-label="Primary" className="hidden md:flex items-center gap-6">
@@ -384,7 +399,9 @@ export default function Portfolio() {
               ))}
               <a
                 {...RESUME_LINK_PROPS}
-                className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border border-uva-orange text-white hover:bg-uva-orange/20 transition-colors"
+                className={`inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border text-white transition-colors ${
+                  isDark ? "border-dbw-300 hover:bg-dbw-300/15" : "border-uva-orange hover:bg-uva-orange/20"
+                }`}
               >
                 <Download className="h-4 w-4" aria-hidden="true" /> Resume
               </a>
@@ -414,7 +431,7 @@ export default function Portfolio() {
           <nav
             id="mobile-menu"
             aria-label="Mobile"
-            className={`md:hidden border-t border-white/10 text-white ${isDark ? "bg-uva-navy-950" : "bg-uva-navy"}`}
+            className={`md:hidden border-t border-white/10 text-white ${isDark ? "bg-dbw-900" : "bg-uva-navy"}`}
           >
             <div className="px-4 py-2 flex flex-col gap-2">
               {NAV_LINKS.map(([label, href]) => (
@@ -427,7 +444,7 @@ export default function Portfolio() {
                 onClick={() => setOpen(false)}
                 className={`py-2 inline-flex items-center gap-2 ${ui.navLink}`}
               >
-                <Download className="h-4 w-4 text-uva-orange" aria-hidden="true" /> Resume
+                <Download className={`h-4 w-4 ${isDark ? "text-dbw-300" : "text-uva-orange"}`} aria-hidden="true" /> Resume
               </a>
             </div>
           </nav>
@@ -435,88 +452,79 @@ export default function Portfolio() {
       </header>
 
       <main>
-        <section id="home" className="mx-auto max-w-6xl px-4 py-16">
-          <div className="grid md:grid-cols-3 gap-10 items-start">
-            <div className="md:col-span-1 flex justify-center">
-              <img
-                src={PROFILE.headshot}
-                alt={`${PROFILE.name} headshot`}
-                className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover border-4 border-uva-orange shadow-md"
-              />
+        <section id="home" className="mx-auto max-w-6xl px-4 pt-16 pb-14">
+          <div className="mx-auto max-w-3xl text-center">
+            <img
+              src={PROFILE.headshot}
+              alt={`${PROFILE.name} headshot`}
+              className={`mx-auto w-36 h-36 md:w-44 md:h-44 rounded-full object-cover border-4 shadow-md ${ui.accentBorder}`}
+            />
+            <h1 className={`mt-6 text-4xl md:text-6xl font-extrabold tracking-tight ${ui.heading}`}>{PROFILE.name}</h1>
+            <p className={`mt-5 text-lg md:text-xl leading-relaxed ${ui.body}`}>{PROFILE.heroLines[0]}</p>
+            <p className={`mt-2 text-base md:text-lg leading-relaxed ${ui.meta}`}>{PROFILE.heroLines[1]}</p>
+
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <a href="#projects" className={`${ui.buttonPrimary} px-6 py-3 text-base font-semibold`}>
+                View Projects <ArrowDown className="h-4 w-4" aria-hidden="true" />
+              </a>
+              <a {...RESUME_LINK_PROPS} className={`${ui.button} px-6 py-3 text-base font-semibold`}>
+                <Download className={`h-4 w-4 ${ui.icon}`} aria-hidden="true" /> Resume
+              </a>
             </div>
-            <div className="md:col-span-2">
-              <p className="text-sm uppercase tracking-wider font-semibold">
-                <span className={isDark ? "text-slate-200" : "text-uva-navy"}>{PROFILE.role}</span>{" "}
-                <span className={isDark ? "text-uva-orange-300" : "text-uva-orange-700"}>@ UVA</span>
-              </p>
-              <h1 className={`mt-1 text-4xl md:text-5xl font-extrabold leading-tight ${ui.heading}`}>{PROFILE.name}</h1>
-              <p className={`mt-4 leading-relaxed max-w-prose ${ui.body}`}>{PROFILE.aboutIntro}</p>
-              <ul className={`mt-3 grid gap-2 max-w-prose list-disc pl-5 marker:text-uva-orange ${ui.body}`}>
-                {PROFILE.aboutBullets.map((b) => (
-                  <li key={b}>{b}</li>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+              <a href={`mailto:${PROFILE.email}`} className={ui.link}>
+                <Mail className="h-4 w-4" aria-hidden="true" /> Email
+              </a>
+              <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className={ui.link}>
+                <Github className="h-4 w-4" aria-hidden="true" /> GitHub
+              </a>
+              <a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer" className={ui.link}>
+                <Linkedin className="h-4 w-4" aria-hidden="true" /> LinkedIn
+              </a>
+            </div>
+          </div>
+
+          <div className={`mx-auto mt-14 max-w-3xl p-6 md:p-8 ${ui.panel}`}>
+            <h2 className={`text-xl font-bold ${ui.heading}`}>About Me</h2>
+            <p className={`mt-3 leading-relaxed ${ui.body}`}>{PROFILE.about}</p>
+          </div>
+
+          <div className="mx-auto mt-6 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
+            <div className={`border-t-4 p-6 text-center ${ui.panel} ${ui.accentTop}`}>
+              <h2 className={`text-sm font-semibold uppercase tracking-wider ${ui.heading}`}>Education</h2>
+              <p className={`mt-3 text-lg font-semibold ${ui.heading}`}>{PROFILE.education.school}</p>
+              <p className={`text-sm ${ui.meta}`}>{PROFILE.education.location}</p>
+              <ul className={`mt-3 space-y-1 ${ui.body}`}>
+                {PROFILE.education.degrees.split(" · ").map((d) => (
+                  <li key={d}>{d}</li>
                 ))}
               </ul>
-
-              <div className="mt-6 grid gap-4 lg:grid-cols-2">
-                {[
-                  [
-                    "Objectives",
-                    <p key="o" className={`mt-2 ${ui.body}`}>
-                      {PROFILE.objectives[0]}
-                    </p>,
-                  ],
-                  [
-                    "Education",
-                    <div key="e">
-                      <p className={`mt-2 font-semibold ${ui.heading}`}>{PROFILE.education.school}</p>
-                      <p className={`text-xs ${ui.meta}`}>{PROFILE.education.location}</p>
-                      <p className={`mt-2 ${ui.body}`}>{PROFILE.education.degrees}</p>
-                      <p className={`mt-1 text-sm ${ui.body}`}>{PROFILE.education.status}</p>
-                    </div>,
-                  ],
-                ].map(([label, content]) => (
-                  <div
-                    key={label}
-                    className={`rounded-2xl border border-l-4 border-l-uva-orange p-4 ${
-                      isDark ? "border-uva-navy-700 bg-uva-navy-800/70" : "border-uva-navy-100 bg-white/80"
-                    }`}
-                  >
-                    <h2 className={`text-sm font-semibold uppercase tracking-wider ${ui.heading}`}>{label}</h2>
-                    {content}
-                  </div>
+              <p className={`mt-3 text-sm ${ui.meta}`}>{PROFILE.education.status}</p>
+            </div>
+            <div className={`border-t-4 p-6 text-center ${ui.panel} ${ui.accentTop}`}>
+              <h2 className={`text-sm font-semibold uppercase tracking-wider ${ui.heading}`}>Career Objectives</h2>
+              <p className={`mt-3 ${ui.body}`}>{PROFILE.objectives.summary}</p>
+              <ul className="mt-3 flex flex-wrap justify-center gap-2">
+                {PROFILE.objectives.roles.map((r) => (
+                  <li key={r} className={`${ui.chip} text-sm`}>
+                    {r}
+                  </li>
                 ))}
-              </div>
-
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <a href={`mailto:${PROFILE.email}`} className={ui.buttonPrimary}>
-                  <Mail className="h-4 w-4" aria-hidden="true" /> Email
-                </a>
-                <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className={ui.button}>
-                  <Github className={`h-4 w-4 ${ui.icon}`} aria-hidden="true" /> GitHub
-                </a>
-                <a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer" className={ui.button}>
-                  <Linkedin className={`h-4 w-4 ${ui.icon}`} aria-hidden="true" /> LinkedIn
-                </a>
-                <a {...RESUME_LINK_PROPS} className={ui.button}>
-                  <Download className={`h-4 w-4 ${ui.icon}`} aria-hidden="true" /> Resume
-                </a>
-              </div>
+              </ul>
+              <p className={`mt-3 text-sm ${ui.meta}`}>{PROFILE.objectives.detail}</p>
             </div>
           </div>
         </section>
 
-        <section
-          id="projects"
-          className={`w-full border-y ${isDark ? "bg-uva-navy-900 border-uva-navy-800" : "bg-white border-uva-navy-100"}`}
-        >
+        <section id="projects" className={`w-full border-y ${ui.sectionAlt}`}>
           <div className="mx-auto max-w-6xl px-4 py-14">
             {sectionHeading("Projects")}
             <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
               {PROJECTS.map((p) => (
                 <article key={p.title} className={`flex h-full flex-col overflow-hidden ${ui.card}`}>
                   <div
-                    className={`aspect-video w-full overflow-hidden border-b-2 border-uva-orange ${
-                      isDark ? "bg-uva-navy-950" : "bg-uva-navy-50"
+                    className={`aspect-video w-full overflow-hidden border-b-2 ${
+                      isDark ? "border-dbw-600 bg-dbw-900" : "border-uva-orange bg-uva-navy-50"
                     }`}
                   >
                     {renderProjectMedia(p)}
@@ -532,7 +540,7 @@ export default function Portfolio() {
                         </span>
                       ))}
                     </div>
-                    <ul className={`mt-3 list-disc pl-5 text-sm space-y-1 marker:text-uva-orange ${ui.body}`}>
+                    <ul className={`mt-3 list-disc pl-5 text-sm space-y-1 ${ui.marker} ${ui.body}`}>
                       {p.highlights
                         .filter((h) => h.trim() !== "")
                         .map((h, i) => (
@@ -560,10 +568,7 @@ export default function Portfolio() {
           </div>
         </section>
 
-        <section
-          id="experience"
-          className={`w-full border-y ${isDark ? "bg-uva-navy-950/70 border-uva-navy-800" : "bg-uva-navy-50 border-uva-navy-100"}`}
-        >
+        <section id="experience" className={`w-full border-y ${ui.sectionBase}`}>
           <div className="mx-auto max-w-6xl px-4 py-14">
             {sectionHeading("Experience", Briefcase)}
             <div className="mt-8 grid gap-6">
@@ -586,7 +591,7 @@ export default function Portfolio() {
                     )}
                   </div>
                   {j.summary && <p className={`mt-3 text-sm ${ui.body}`}>{j.summary}</p>}
-                  <ul className={`mt-3 list-disc pl-5 text-sm space-y-1 marker:text-uva-orange ${ui.body}`}>
+                  <ul className={`mt-3 list-disc pl-5 text-sm space-y-1 ${ui.marker} ${ui.body}`}>
                     {j.bullets.map((b, i) => (
                       <li key={i}>{b}</li>
                     ))}
@@ -604,10 +609,7 @@ export default function Portfolio() {
           </div>
         </section>
 
-        <section
-          id="skills"
-          className={`w-full border-y ${isDark ? "bg-uva-navy-900 border-uva-navy-800" : "bg-white border-uva-navy-100"}`}
-        >
+        <section id="skills" className={`w-full border-y ${ui.sectionAlt}`}>
           <div className="mx-auto max-w-6xl px-4 py-14">
             {sectionHeading("Skills")}
             <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -618,7 +620,7 @@ export default function Portfolio() {
                     {items.map(({ name, source }) => (
                       <li key={name} className="flex flex-wrap items-baseline justify-between gap-x-3">
                         <span>
-                          <span className="text-uva-orange" aria-hidden="true">
+                          <span className={isDark ? "text-dbw-300" : "text-uva-orange"} aria-hidden="true">
                             -
                           </span>{" "}
                           {name}
@@ -633,10 +635,7 @@ export default function Portfolio() {
           </div>
         </section>
 
-        <section
-          id="contact"
-          className={`w-full border-y ${isDark ? "bg-uva-navy-950/70 border-uva-navy-800" : "bg-uva-navy-50 border-uva-navy-100"}`}
-        >
+        <section id="contact" className={`w-full border-y ${ui.sectionBase}`}>
           <div className="mx-auto max-w-6xl px-4 py-14">
             {sectionHeading("Contact")}
             <p className={`mt-4 max-w-prose ${ui.body}`}>
@@ -672,7 +671,11 @@ export default function Portfolio() {
         </section>
       </main>
 
-      <footer className={`border-t-2 border-uva-orange py-10 text-center text-xs ${isDark ? "bg-uva-navy-950 text-slate-400" : "bg-uva-navy text-white/80"}`}>
+      <footer
+        className={`border-t-2 py-10 text-center text-xs ${
+          isDark ? "border-dbw-600 bg-dbw-900 text-dbw-muted" : "border-uva-orange bg-uva-navy text-white/80"
+        }`}
+      >
         (c) {new Date().getFullYear()} {PROFILE.name}
       </footer>
     </div>
