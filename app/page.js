@@ -11,10 +11,10 @@ import {
   ExternalLink,
   Code2,
   Briefcase,
-  ArrowRight,
-  ArrowLeft,
   Moon,
   Sun,
+  Accessibility,
+  Bot,
 } from "lucide-react";
 
 const PROJECTS = [
@@ -39,6 +39,7 @@ const PROJECTS = [
     stack: ["Systems Analysis", "Requirements Engineering", "Decision Analysis"],
     blurb:
       "A systems engineering study of UVA's WCAG 2.1 A/AA compliance gap affecting ~2,400 faculty across 12 schools. Our group was selected as the top group to present to the class.",
+    placeholderIcon: Accessibility,
     highlights: [
       "Ran a full systems engineering lifecycle: stakeholder analysis, requirements, decision analysis, and recommendation",
       "Applied decision analysis to recommend a two-tier opt-in workflow over fixed-cadence emails: faculty who have started receive monthly reminders, and reminders stop once they complete, using frequency as the behavioral lever",
@@ -50,6 +51,7 @@ const PROJECTS = [
     stack: ["Python", "C++", "GitHub", "Systems Analysis"],
     blurb:
       "Member of the Computer and Systems Engineering subteams building a robot for the NASA Lunabotics competition.",
+    placeholderIcon: Bot,
     highlights: [
       "Apply systems analysis to design and integrate the robot, using Python, C++, and GitHub to connect all subsystems",
     ],
@@ -68,7 +70,6 @@ const PROJECTS = [
       "Developed an interactive Towers of Hanoi game in Unity (C#) to study gesture-based interaction",
     ],
     images: ["/hanoi-1.jpg", "/hanoi-2.jpg"],
-    layout: "right-images",
   },
 ];
 
@@ -207,7 +208,6 @@ const RESUME_LINK_PROPS = {
 
 export default function Portfolio() {
   const [open, setOpen] = useState(false);
-  const [hanoiIdx, setHanoiIdx] = useState(0);
   const [theme, setTheme] = useState("light");
   const [videoLoadError, setVideoLoadError] = useState({});
   const [videoSourceErrorCount, setVideoSourceErrorCount] = useState({});
@@ -228,8 +228,6 @@ export default function Portfolio() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const nextImg = (len) => setHanoiIdx((i) => (i + 1) % len);
-  const prevImg = (len) => setHanoiIdx((i) => (i - 1 + len) % len);
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
   const getVideoMimeType = (src) => {
     if (src.endsWith(".webm")) return "video/webm";
@@ -257,43 +255,144 @@ export default function Portfolio() {
     });
   };
 
+  // Shared theme-aware class names, so every section uses the same UVA palette.
+  const ui = {
+    heading: isDark ? "text-slate-100" : "text-uva-navy",
+    body: isDark ? "text-slate-300" : "text-slate-700",
+    meta: isDark ? "text-slate-400" : "text-slate-600",
+    icon: isDark ? "text-uva-orange-300" : "text-uva-navy",
+    card: `rounded-3xl border shadow-sm transition-all motion-safe:transform-gpu motion-safe:hover:-translate-y-1 hover:shadow-xl hover:border-uva-orange focus-within:border-uva-orange ${
+      isDark ? "border-uva-navy-700 bg-uva-navy-800" : "border-uva-navy-100 bg-white"
+    }`,
+    chip: `text-xs border rounded-xl px-2 py-1 ${
+      isDark ? "border-uva-navy-600 bg-uva-navy-700 text-slate-100" : "border-uva-navy-100 bg-uva-navy-50 text-uva-navy"
+    }`,
+    button: `inline-flex items-center gap-2 rounded-2xl px-4 py-2 border transition-colors ${
+      isDark
+        ? "border-uva-navy-600 bg-uva-navy-800 text-slate-100 hover:border-uva-orange hover:bg-uva-navy-700"
+        : "border-uva-navy-200 bg-white text-uva-navy hover:border-uva-orange hover:bg-uva-orange-50"
+    }`,
+    buttonPrimary: `inline-flex items-center gap-2 rounded-2xl px-4 py-2 border text-white transition-colors ${
+      isDark
+        ? "border-uva-orange bg-uva-navy-600 hover:bg-uva-navy-700"
+        : "border-uva-navy bg-uva-navy hover:bg-uva-navy-700 hover:border-uva-orange"
+    }`,
+    link: `inline-flex items-center gap-1 text-sm font-medium underline decoration-uva-orange decoration-2 underline-offset-4 hover:no-underline ${
+      isDark ? "text-uva-orange-300" : "text-uva-navy"
+    }`,
+    navLink: "rounded-md text-white/90 hover:text-white underline-offset-8 decoration-2 decoration-uva-orange hover:underline",
+  };
+
+  const sectionHeading = (label, Icon) => (
+    <h2 className={`text-2xl font-bold flex items-center gap-2 ${ui.heading}`}>
+      {Icon && <Icon className={`h-5 w-5 ${ui.icon}`} aria-hidden="true" />}
+      <span className="border-b-4 border-uva-orange pb-1">{label}</span>
+    </h2>
+  );
+
+  const renderProjectMedia = (p) => {
+    const videoSources = p.demoSources || (p.demo && /\.mp4($|\?)/i.test(p.demo) ? [p.demo] : []);
+
+    if (videoSources.length && !videoLoadError[p.title]) {
+      return (
+        <video
+          className="h-full w-full object-contain bg-uva-navy-950"
+          controls
+          playsInline
+          preload="metadata"
+          poster={p.poster}
+          aria-label={`${p.title} demo video`}
+          onLoadedData={() => clearVideoError(p.title)}
+        >
+          {videoSources.map((src) => (
+            <source
+              key={src}
+              src={src}
+              type={getVideoMimeType(src)}
+              onError={() => handleVideoSourceError(p.title, videoSources.length)}
+            />
+          ))}
+          Your browser does not support the video tag.
+        </video>
+      );
+    }
+
+    if (videoSources.length) {
+      return (
+        <div className="relative h-full w-full bg-uva-navy-950">
+          {p.poster && <img src={p.poster} alt="" className="h-full w-full object-contain opacity-40" />}
+          <p className="absolute inset-0 flex items-center justify-center p-4 text-center text-sm text-white">
+            Demo video is unavailable right now.
+          </p>
+        </div>
+      );
+    }
+
+    if (p.images?.length) {
+      // The screenshots are roughly square, so showing them side by side fills the 16:9 frame
+      // without cropping any of the game board.
+      return (
+        <div
+          className={`grid h-full w-full gap-2 p-2 ${p.images.length > 1 ? "grid-cols-2" : "grid-cols-1"} ${
+            isDark ? "bg-uva-navy-900" : "bg-uva-navy-50"
+          }`}
+        >
+          {p.images.map((src, i) => (
+            <img
+              key={src}
+              src={src}
+              alt={`${p.title} screenshot ${i + 1}`}
+              className="h-full w-full min-h-0 object-contain"
+            />
+          ))}
+        </div>
+      );
+    }
+
+    const Icon = p.placeholderIcon || Code2;
+    return (
+      <div
+        aria-hidden="true"
+        className="flex h-full w-full items-center justify-center bg-gradient-to-br from-uva-navy to-uva-navy-600"
+      >
+        <Icon className="h-16 w-16 text-uva-orange" strokeWidth={1.5} />
+      </div>
+    );
+  };
+
   return (
     <div
       className={`min-h-screen bg-gradient-to-b ${
-        isDark ? "from-slate-950 to-slate-900 text-slate-100" : "from-blue-50 to-white text-slate-800"
+        isDark ? "from-uva-navy-950 to-uva-navy-900 text-slate-100" : "from-uva-navy-50 to-white text-slate-800"
       }`}
     >
       <header
-        className={`sticky top-0 z-30 backdrop-blur border-b shadow-[0_1px_0_0_rgba(255,255,255,0.06)] ${
-          isDark ? "bg-slate-950/95 border-slate-800" : "bg-blue-900/95 border-blue-800"
+        className={`sticky top-0 z-30 backdrop-blur border-b-2 border-uva-orange ${
+          isDark ? "bg-uva-navy-950/95" : "bg-uva-navy/95"
         }`}
       >
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between text-white">
-          <a href="#home" className="flex items-center gap-2 font-semibold">
-            <Code2 className="h-5 w-5 text-white" /> {PROFILE.name}
+          <a href="#home" className="flex items-center gap-2 font-semibold rounded-md">
+            <Code2 className="h-5 w-5 text-uva-orange" aria-hidden="true" /> {PROFILE.name}
           </a>
           <div className="flex items-center gap-2">
             <nav aria-label="Primary" className="hidden md:flex items-center gap-6">
               {NAV_LINKS.map(([label, href]) => (
-                <a key={label} href={href} className={isDark ? "hover:text-slate-300" : "hover:text-blue-200"}>
+                <a key={label} href={href} className={ui.navLink}>
                   {label}
                 </a>
               ))}
               <a
                 {...RESUME_LINK_PROPS}
-                className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border border-white/30 bg-white/10 hover:bg-white/20"
+                className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border border-uva-orange text-white hover:bg-uva-orange/20 transition-colors"
               >
-                <Download className="h-4 w-4" /> Resume
+                <Download className="h-4 w-4" aria-hidden="true" /> Resume
               </a>
             </nav>
             <button
               type="button"
               onClick={toggleTheme}
-              className={`inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border transition-colors ${
-                isDark
-                  ? "border-slate-600 bg-slate-800 text-slate-100 hover:bg-slate-700"
-                  : "border-white/30 bg-white/10 text-white hover:bg-white/20"
-              }`}
+              className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 border border-white/30 bg-white/10 text-white hover:bg-white/20 transition-colors"
               aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
             >
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -301,7 +400,7 @@ export default function Portfolio() {
             </button>
             <button
               type="button"
-              className="md:hidden p-2 text-white"
+              className="md:hidden p-2 text-white rounded-md"
               onClick={() => setOpen(!open)}
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
@@ -315,433 +414,267 @@ export default function Portfolio() {
           <nav
             id="mobile-menu"
             aria-label="Mobile"
-            className={`md:hidden border-t text-white ${
-              isDark ? "border-slate-800 bg-slate-950/98" : "border-blue-800 bg-blue-900/98"
-            }`}
+            className={`md:hidden border-t border-white/10 text-white ${isDark ? "bg-uva-navy-950" : "bg-uva-navy"}`}
           >
             <div className="px-4 py-2 flex flex-col gap-2">
               {NAV_LINKS.map(([label, href]) => (
-                <a
-                  key={label}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  className={`py-2 ${isDark ? "hover:text-slate-300" : "hover:text-blue-200"}`}
-                >
+                <a key={label} href={href} onClick={() => setOpen(false)} className={`py-2 ${ui.navLink}`}>
                   {label}
                 </a>
               ))}
               <a
                 {...RESUME_LINK_PROPS}
                 onClick={() => setOpen(false)}
-                className={`py-2 inline-flex items-center gap-2 ${isDark ? "hover:text-slate-300" : "hover:text-blue-200"}`}
+                className={`py-2 inline-flex items-center gap-2 ${ui.navLink}`}
               >
-                <Download className="h-4 w-4" /> Resume
+                <Download className="h-4 w-4 text-uva-orange" aria-hidden="true" /> Resume
               </a>
             </div>
           </nav>
         )}
       </header>
 
-      <section id="home" className="mx-auto max-w-6xl px-4 py-16">
-        <div className="grid md:grid-cols-3 gap-10 items-start">
-          <div className="md:col-span-1 flex justify-center">
-            <img
-              src={PROFILE.headshot}
-              alt={`${PROFILE.name} headshot`}
-              className={`w-40 h-40 md:w-56 md:h-56 rounded-full object-cover border shadow-sm ${
-                isDark ? "border-slate-700" : "border-blue-100"
-              }`}
-            />
-          </div>
-          <div className="md:col-span-2">
-            <p className="text-sm uppercase tracking-wider font-semibold">
-              <span className={isDark ? "text-slate-200" : "text-[#232D4B]"}>{PROFILE.role}</span>{" "}
-              <span className={isDark ? "text-amber-400" : "text-[#E57200]"}>@ UVA</span>
-            </p>
-            <h1 className={`mt-1 text-4xl md:text-5xl font-extrabold leading-tight ${isDark ? "text-slate-100" : "text-blue-900"}`}>
-              {PROFILE.name}
-            </h1>
-            <p className={`mt-4 leading-relaxed max-w-prose ${isDark ? "text-slate-300" : "text-slate-700"}`}>{PROFILE.aboutIntro}</p>
-            <ul className={`mt-3 grid gap-2 max-w-prose list-disc pl-5 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
-              {PROFILE.aboutBullets.map((b) => (
-                <li key={b}>{b}</li>
-              ))}
-            </ul>
-
-            <div className="mt-6 grid gap-4 lg:grid-cols-2">
-              <div className={`rounded-2xl border p-4 ${isDark ? "border-slate-700 bg-slate-800/70" : "border-blue-100 bg-white/70"}`}>
-                <h2 className={`text-sm font-semibold uppercase tracking-wider ${isDark ? "text-slate-100" : "text-blue-900"}`}>Objectives</h2>
-                <p className={`mt-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>{PROFILE.objectives[0]}</p>
-              </div>
-              <div className={`rounded-2xl border p-4 ${isDark ? "border-slate-700 bg-slate-800/70" : "border-blue-100 bg-white/70"}`}>
-                <h2 className={`text-sm font-semibold uppercase tracking-wider ${isDark ? "text-slate-100" : "text-blue-900"}`}>Education</h2>
-                <p className={`mt-2 font-semibold ${isDark ? "text-slate-100" : "text-blue-900"}`}>{PROFILE.education.school}</p>
-                <p className={`text-xs ${isDark ? "text-slate-400" : "text-blue-700/70"}`}>{PROFILE.education.location}</p>
-                <p className={`mt-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>{PROFILE.education.degrees}</p>
-                <p className={`mt-1 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>{PROFILE.education.status}</p>
-              </div>
+      <main>
+        <section id="home" className="mx-auto max-w-6xl px-4 py-16">
+          <div className="grid md:grid-cols-3 gap-10 items-start">
+            <div className="md:col-span-1 flex justify-center">
+              <img
+                src={PROFILE.headshot}
+                alt={`${PROFILE.name} headshot`}
+                className="w-40 h-40 md:w-56 md:h-56 rounded-full object-cover border-4 border-uva-orange shadow-md"
+              />
             </div>
+            <div className="md:col-span-2">
+              <p className="text-sm uppercase tracking-wider font-semibold">
+                <span className={isDark ? "text-slate-200" : "text-uva-navy"}>{PROFILE.role}</span>{" "}
+                <span className={isDark ? "text-uva-orange-300" : "text-uva-orange-700"}>@ UVA</span>
+              </p>
+              <h1 className={`mt-1 text-4xl md:text-5xl font-extrabold leading-tight ${ui.heading}`}>{PROFILE.name}</h1>
+              <p className={`mt-4 leading-relaxed max-w-prose ${ui.body}`}>{PROFILE.aboutIntro}</p>
+              <ul className={`mt-3 grid gap-2 max-w-prose list-disc pl-5 marker:text-uva-orange ${ui.body}`}>
+                {PROFILE.aboutBullets.map((b) => (
+                  <li key={b}>{b}</li>
+                ))}
+              </ul>
 
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <a
-                href={`mailto:${PROFILE.email}`}
-                className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border text-white ${
-                  isDark ? "border-slate-700 bg-slate-700 hover:bg-slate-600" : "border-white/50 bg-blue-900 hover:bg-blue-800"
-                }`}
-              >
-                <Mail className="h-4 w-4" /> Email
-              </a>
-              <a
-                href={PROFILE.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border ${
-                  isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
-                }`}
-              >
-                <Github className={`h-4 w-4 ${isDark ? "text-slate-200" : "text-blue-700"}`} /> GitHub
-              </a>
-              <a
-                href={PROFILE.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border ${
-                  isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
-                }`}
-              >
-                <Linkedin className={`h-4 w-4 ${isDark ? "text-slate-200" : "text-blue-700"}`} /> LinkedIn
-              </a>
-              <a
-                {...RESUME_LINK_PROPS}
-                className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border ${
-                  isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
-                }`}
-              >
-                <Download className={`h-4 w-4 ${isDark ? "text-slate-200" : "text-blue-700"}`} /> Resume
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="projects" className={`w-full border-y ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100"}`}>
-        <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className={`text-2xl font-bold ${isDark ? "text-slate-100" : "text-blue-900"}`}>Projects</h2>
-          <div className="mt-6 flex flex-col gap-6">
-            {PROJECTS.map((p) => (
-              <article
-                key={p.title}
-                className={`w-full rounded-3xl border p-6 shadow-sm transition-all transform-gpu hover:-translate-y-1 hover:shadow-2xl ${
-                  isDark ? "border-slate-700 bg-slate-800 hover:border-slate-500" : "border-blue-100 bg-white hover:border-blue-300"
-                }`}
-              >
-                {p.layout === "right-images" ? (
-                  <div className="grid md:grid-cols-3 gap-6 items-start">
-                    <div className="md:col-span-2">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h3 className={`text-lg font-semibold ${isDark ? "text-slate-100" : "text-blue-900"}`}>{p.title}</h3>
-                          <p className={`text-xs ${isDark ? "text-slate-400" : "text-blue-700/70"}`}>{p.period}</p>
-                        </div>
-                      </div>
-                      <p className={`mt-3 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>{p.blurb}</p>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {p.stack.map((t) => (
-                          <span
-                            key={t}
-                            className={`text-xs border rounded-xl px-2 py-1 ${
-                              isDark ? "border-slate-600 bg-slate-700 text-slate-100" : "border-blue-200 bg-blue-50 text-blue-800"
-                            }`}
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                      <ul className={`mt-3 list-disc pl-5 text-sm space-y-1 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
-                        {p.highlights
-                          .filter((h) => h.trim() !== "")
-                          .map((h, i) => (
-                            <li key={i}>{h}</li>
-                          ))}
-                      </ul>
-                      {p.repo && (
-                        <a href={p.repo} className="mt-3 inline-flex items-center gap-1 text-sm text-blue-800 underline hover:no-underline">
-                          <Github className="h-4 w-4" /> Repo
-                        </a>
-                      )}
-                    </div>
-
-                    <div className="md:col-span-1">
-                      {p.images && p.images.length >= 2 && (
-                        <div className="flex flex-col items-center">
-                          <div className={`relative w-64 md:w-72 aspect-square overflow-hidden rounded-2xl border ${isDark ? "border-slate-700" : "border-blue-100"}`}>
-                            {p.images.map((src, i) => (
-                              <img
-                                key={src}
-                                src={src}
-                                alt={`${p.title} image ${i + 1}`}
-                                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-                                  i === hanoiIdx ? "opacity-100" : "opacity-0"
-                                }`}
-                              />
-                            ))}
-                            <button
-                              type="button"
-                              onClick={() => prevImg(p.images.length)}
-                              className={`absolute left-2 top-1/2 -translate-y-1/2 border rounded-full p-1 shadow-md ${
-                                isDark ? "bg-slate-800/90 hover:bg-slate-700 text-slate-100 border-slate-600" : "bg-white/70 hover:bg-white text-blue-700 border-blue-200"
-                              }`}
-                              aria-label="Show previous image"
-                            >
-                              <ArrowLeft className="h-5 w-5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => nextImg(p.images.length)}
-                              className={`absolute right-2 top-1/2 -translate-y-1/2 border rounded-full p-1 shadow-md ${
-                                isDark ? "bg-slate-800/90 hover:bg-slate-700 text-slate-100 border-slate-600" : "bg-white/70 hover:bg-white text-blue-700 border-blue-200"
-                              }`}
-                              aria-label="Show next image"
-                            >
-                              <ArrowRight className="h-5 w-5 arrow-slide" />
-                            </button>
-                          </div>
-                          <div className="mt-2 flex gap-1.5">
-                            {p.images.map((_, i) => (
-                              <span
-                                key={i}
-                                className={`h-1.5 w-1.5 rounded-full ${
-                                  i === hanoiIdx ? (isDark ? "bg-slate-200" : "bg-blue-700") : isDark ? "bg-slate-600" : "bg-blue-200"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+              <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                {[
+                  [
+                    "Objectives",
+                    <p key="o" className={`mt-2 ${ui.body}`}>
+                      {PROFILE.objectives[0]}
+                    </p>,
+                  ],
+                  [
+                    "Education",
+                    <div key="e">
+                      <p className={`mt-2 font-semibold ${ui.heading}`}>{PROFILE.education.school}</p>
+                      <p className={`text-xs ${ui.meta}`}>{PROFILE.education.location}</p>
+                      <p className={`mt-2 ${ui.body}`}>{PROFILE.education.degrees}</p>
+                      <p className={`mt-1 text-sm ${ui.body}`}>{PROFILE.education.status}</p>
+                    </div>,
+                  ],
+                ].map(([label, content]) => (
+                  <div
+                    key={label}
+                    className={`rounded-2xl border border-l-4 border-l-uva-orange p-4 ${
+                      isDark ? "border-uva-navy-700 bg-uva-navy-800/70" : "border-uva-navy-100 bg-white/80"
+                    }`}
+                  >
+                    <h2 className={`text-sm font-semibold uppercase tracking-wider ${ui.heading}`}>{label}</h2>
+                    {content}
                   </div>
-                ) : (
-                  <>
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className={`text-lg font-semibold ${isDark ? "text-slate-100" : "text-blue-900"}`}>{p.title}</h3>
-                        <p className={`text-xs ${isDark ? "text-slate-400" : "text-blue-700/70"}`}>{p.period}</p>
-                      </div>
-                    </div>
-                    <p className={`mt-3 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>{p.blurb}</p>
+                ))}
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <a href={`mailto:${PROFILE.email}`} className={ui.buttonPrimary}>
+                  <Mail className="h-4 w-4" aria-hidden="true" /> Email
+                </a>
+                <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className={ui.button}>
+                  <Github className={`h-4 w-4 ${ui.icon}`} aria-hidden="true" /> GitHub
+                </a>
+                <a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer" className={ui.button}>
+                  <Linkedin className={`h-4 w-4 ${ui.icon}`} aria-hidden="true" /> LinkedIn
+                </a>
+                <a {...RESUME_LINK_PROPS} className={ui.button}>
+                  <Download className={`h-4 w-4 ${ui.icon}`} aria-hidden="true" /> Resume
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="projects"
+          className={`w-full border-y ${isDark ? "bg-uva-navy-900 border-uva-navy-800" : "bg-white border-uva-navy-100"}`}
+        >
+          <div className="mx-auto max-w-6xl px-4 py-14">
+            {sectionHeading("Projects")}
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+              {PROJECTS.map((p) => (
+                <article key={p.title} className={`flex h-full flex-col overflow-hidden ${ui.card}`}>
+                  <div
+                    className={`aspect-video w-full overflow-hidden border-b-2 border-uva-orange ${
+                      isDark ? "bg-uva-navy-950" : "bg-uva-navy-50"
+                    }`}
+                  >
+                    {renderProjectMedia(p)}
+                  </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className={`text-lg font-semibold ${ui.heading}`}>{p.title}</h3>
+                    <p className={`text-xs ${ui.meta}`}>{p.period}</p>
+                    <p className={`mt-3 text-sm ${ui.body}`}>{p.blurb}</p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {p.stack.map((t) => (
-                        <span
-                          key={t}
-                          className={`text-xs border rounded-xl px-2 py-1 ${
-                            isDark ? "border-slate-600 bg-slate-700 text-slate-100" : "border-blue-200 bg-blue-50 text-blue-800"
-                          }`}
-                        >
+                        <span key={t} className={ui.chip}>
                           {t}
                         </span>
                       ))}
                     </div>
-                    <ul className={`mt-3 list-disc pl-5 text-sm space-y-1 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                    <ul className={`mt-3 list-disc pl-5 text-sm space-y-1 marker:text-uva-orange ${ui.body}`}>
                       {p.highlights
                         .filter((h) => h.trim() !== "")
                         .map((h, i) => (
                           <li key={i}>{h}</li>
                         ))}
                     </ul>
-                    <div className="mt-4 flex flex-col gap-3">
-                      {(p.demoSources?.length || (p.demo && /\.mp4($|\?)/i.test(p.demo))) && !videoLoadError[p.title] ? (
-                        <video
-                          className={`w-full aspect-video rounded-2xl border object-contain ${isDark ? "border-slate-700 bg-slate-900" : "border-blue-100 bg-slate-100"}`}
-                          controls
-                          playsInline
-                          preload="metadata"
-                          poster={p.poster}
-                          onLoadedData={() => clearVideoError(p.title)}
-                        >
-                          {(p.demoSources || [p.demo]).map((src) => (
-                            <source
-                              key={src}
-                              src={src}
-                              type={getVideoMimeType(src)}
-                              onError={() => handleVideoSourceError(p.title, (p.demoSources || [p.demo]).filter(Boolean).length)}
-                            />
-                          ))}
-                          Your browser does not support the video tag.
-                        </video>
-                      ) : (p.demoSources?.length || (p.demo && /\.mp4($|\?)/i.test(p.demo))) && videoLoadError[p.title] ? (
-                          <div
-                            className={`rounded-2xl border p-3 text-sm ${
-                              isDark ? "border-slate-700 bg-slate-900 text-slate-300" : "border-blue-100 bg-slate-50 text-slate-700"
-                            }`}
-                          >
-                            Demo video is unavailable right now.
-                          </div>
-                      ) : p.demo ? (
-                        <a href={p.demo} className="inline-flex items-center gap-1 text-sm text-blue-800 underline hover:no-underline">
-                          <ExternalLink className="h-4 w-4" /> Live
-                        </a>
-                      ) : null}
-                      {p.repo && (
-                        <a href={p.repo} className="inline-flex items-center gap-1 text-sm text-blue-800 underline hover:no-underline">
-                          <Github className="h-4 w-4" /> Repo
-                        </a>
-                      )}
-                    </div>
-                  </>
-                )}
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="experience" className={`w-full border-y ${isDark ? "bg-slate-950/70 border-slate-800" : "bg-blue-50/70 border-blue-100"}`}>
-        <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className={`text-2xl font-bold flex items-center gap-2 ${isDark ? "text-slate-100" : "text-blue-900"}`}>
-            <Briefcase className={`h-5 w-5 ${isDark ? "text-slate-300" : "text-blue-800"}`} /> Experience
-          </h2>
-          <div className="mt-6 grid gap-6">
-            {JOBS.map((j) => (
-              <article
-                key={`${j.company}-${j.role}`}
-                className={`rounded-3xl border p-5 shadow-sm transition-all transform-gpu hover:-translate-y-1 hover:shadow-2xl ${
-                  isDark ? "border-slate-700 bg-slate-800 hover:border-slate-500" : "border-blue-100 bg-white hover:border-blue-300"
-                }`}
-              >
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <div>
-                    <h3 className={`text-lg font-semibold ${isDark ? "text-slate-100" : "text-blue-900"}`}>
-                      {j.role} - {j.company}
-                    </h3>
-                    <p className={`text-xs ${isDark ? "text-slate-400" : "text-blue-700/70"}`}>
-                      {j.period}
-                      {j.location && ` · ${j.location}`}
-                    </p>
+                    {(p.repo || (p.demo && !/\.mp4($|\?)/i.test(p.demo))) && (
+                      <div className="mt-auto flex flex-wrap gap-4 pt-4">
+                        {p.repo && (
+                          <a href={p.repo} target="_blank" rel="noopener noreferrer" className={ui.link}>
+                            <Github className="h-4 w-4" aria-hidden="true" /> GitHub
+                          </a>
+                        )}
+                        {p.demo && !/\.mp4($|\?)/i.test(p.demo) && (
+                          <a href={p.demo} target="_blank" rel="noopener noreferrer" className={ui.link}>
+                            <ExternalLink className="h-4 w-4" aria-hidden="true" /> Live demo
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  {j.link && (
-                    <a href={j.link} className="inline-flex items-center gap-1 text-sm text-blue-800 underline hover:no-underline">
-                      <ExternalLink className="h-4 w-4" /> View
-                    </a>
-                  )}
-                </div>
-                {j.summary && <p className={`mt-3 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>{j.summary}</p>}
-                <ul className={`mt-3 list-disc pl-5 text-sm space-y-1 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
-                  {j.bullets.map((b, i) => (
-                    <li key={i}>{b}</li>
-                  ))}
-                </ul>
-                <div className={`flex flex-wrap gap-2 ${j.tech.length ? "mt-3" : ""}`}>
-                  {j.tech.map((t) => (
-                    <span
-                      key={t}
-                      className={`text-xs border rounded-xl px-2 py-1 ${
-                        isDark ? "border-slate-600 bg-slate-700 text-slate-100" : "border-blue-200 bg-blue-50 text-blue-800"
-                      }`}
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            ))}
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="skills" className={`w-full border-y ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100"}`}>
-        <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className={`text-2xl font-bold ${isDark ? "text-slate-100" : "text-blue-900"}`}>Skills</h2>
-          <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {Object.entries(SKILLS).map(([cat, items]) => (
-              <div
-                key={cat}
-                className={`rounded-3xl border p-5 shadow-sm transition-all transform-gpu hover:-translate-y-1 hover:shadow-2xl ${
-                  isDark ? "border-slate-700 bg-slate-800 hover:border-slate-500" : "border-blue-100 bg-white hover:border-blue-300"
-                }`}
+        <section
+          id="experience"
+          className={`w-full border-y ${isDark ? "bg-uva-navy-950/70 border-uva-navy-800" : "bg-uva-navy-50 border-uva-navy-100"}`}
+        >
+          <div className="mx-auto max-w-6xl px-4 py-14">
+            {sectionHeading("Experience", Briefcase)}
+            <div className="mt-8 grid gap-6">
+              {JOBS.map((j) => (
+                <article key={`${j.company}-${j.role}`} className={`p-5 ${ui.card}`}>
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <div>
+                      <h3 className={`text-lg font-semibold ${ui.heading}`}>
+                        {j.role} - {j.company}
+                      </h3>
+                      <p className={`text-xs ${ui.meta}`}>
+                        {j.period}
+                        {j.location && ` · ${j.location}`}
+                      </p>
+                    </div>
+                    {j.link && (
+                      <a href={j.link} className={ui.link}>
+                        <ExternalLink className="h-4 w-4" aria-hidden="true" /> View
+                      </a>
+                    )}
+                  </div>
+                  {j.summary && <p className={`mt-3 text-sm ${ui.body}`}>{j.summary}</p>}
+                  <ul className={`mt-3 list-disc pl-5 text-sm space-y-1 marker:text-uva-orange ${ui.body}`}>
+                    {j.bullets.map((b, i) => (
+                      <li key={i}>{b}</li>
+                    ))}
+                  </ul>
+                  <div className={`flex flex-wrap gap-2 ${j.tech.length ? "mt-3" : ""}`}>
+                    {j.tech.map((t) => (
+                      <span key={t} className={ui.chip}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="skills"
+          className={`w-full border-y ${isDark ? "bg-uva-navy-900 border-uva-navy-800" : "bg-white border-uva-navy-100"}`}
+        >
+          <div className="mx-auto max-w-6xl px-4 py-14">
+            {sectionHeading("Skills")}
+            <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {Object.entries(SKILLS).map(([cat, items]) => (
+                <div key={cat} className={`p-5 ${ui.card}`}>
+                  <h3 className={`font-semibold ${ui.heading}`}>{cat}</h3>
+                  <ul className={`mt-3 space-y-2 text-sm ${ui.body}`}>
+                    {items.map(({ name, source }) => (
+                      <li key={name} className="flex flex-wrap items-baseline justify-between gap-x-3">
+                        <span>
+                          <span className="text-uva-orange" aria-hidden="true">
+                            -
+                          </span>{" "}
+                          {name}
+                        </span>
+                        {source && <span className={`text-xs italic ${ui.meta}`}>({source})</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="contact"
+          className={`w-full border-y ${isDark ? "bg-uva-navy-950/70 border-uva-navy-800" : "bg-uva-navy-50 border-uva-navy-100"}`}
+        >
+          <div className="mx-auto max-w-6xl px-4 py-14">
+            {sectionHeading("Contact")}
+            <p className={`mt-4 max-w-prose ${ui.body}`}>
+              Seeking Summer 2027 internships in {TARGET_ROLES}. Email is the best way to reach me.
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <a href={`mailto:${PROFILE.email}`} className={`min-w-0 max-w-full break-all ${ui.button}`}>
+                <Mail className={`h-4 w-4 shrink-0 ${ui.icon}`} aria-hidden="true" /> {PROFILE.email}
+              </a>
+              <a
+                href={PROFILE.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`min-w-0 max-w-full break-all ${ui.button}`}
               >
-                <h3 className={`font-semibold ${isDark ? "text-slate-100" : "text-blue-900"}`}>{cat}</h3>
-                <ul className={`mt-3 space-y-2 text-sm ${isDark ? "text-slate-300" : "text-slate-700"}`}>
-                  {items.map(({ name, source }) => (
-                    <li key={name} className="flex flex-wrap items-baseline justify-between gap-x-3">
-                      <span>- {name}</span>
-                      {source && (
-                        <span className={`text-xs italic ${isDark ? "text-slate-400" : "text-slate-500"}`}>({source})</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+                <Github className={`h-4 w-4 shrink-0 ${ui.icon}`} aria-hidden="true" />{" "}
+                {PROFILE.github.replace(/^https?:\/\//, "").replace(/\?.*$/, "")}
+              </a>
+              <a
+                href={PROFILE.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`min-w-0 max-w-full break-all ${ui.button}`}
+              >
+                <Linkedin className={`h-4 w-4 shrink-0 ${ui.icon}`} aria-hidden="true" />{" "}
+                {PROFILE.linkedin.replace(/^https?:\/\/(www\.)?/, "")}
+              </a>
+              <a {...RESUME_LINK_PROPS} className={ui.buttonPrimary}>
+                <Download className="h-4 w-4" aria-hidden="true" /> Resume (PDF)
+              </a>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      <section id="contact" className={`w-full border-y ${isDark ? "bg-slate-950/70 border-slate-800" : "bg-blue-50/70 border-blue-100"}`}>
-        <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className={`text-2xl font-bold ${isDark ? "text-slate-100" : "text-blue-900"}`}>Contact</h2>
-          <p className={`mt-2 max-w-prose ${isDark ? "text-slate-300" : "text-slate-700"}`}>
-            Seeking Summer 2027 internships in {TARGET_ROLES}. Email is the best way to reach me.
-          </p>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <a
-              href={`mailto:${PROFILE.email}`}
-              className={`inline-flex min-w-0 max-w-full items-center gap-2 rounded-2xl px-4 py-2 border break-all ${
-                isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
-              }`}
-            >
-              <Mail className={`h-4 w-4 shrink-0 ${isDark ? "text-slate-200" : "text-blue-700"}`} /> {PROFILE.email}
-            </a>
-            <a
-              href={PROFILE.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex min-w-0 max-w-full items-center gap-2 rounded-2xl px-4 py-2 border break-all ${
-                isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
-              }`}
-            >
-              <Github className={`h-4 w-4 shrink-0 ${isDark ? "text-slate-200" : "text-blue-700"}`} />{" "}
-              {PROFILE.github.replace(/^https?:\/\//, "").replace(/\?.*$/, "")}
-            </a>
-            <a
-              href={PROFILE.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex min-w-0 max-w-full items-center gap-2 rounded-2xl px-4 py-2 border break-all ${
-                isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
-              }`}
-            >
-              <Linkedin className={`h-4 w-4 shrink-0 ${isDark ? "text-slate-200" : "text-blue-700"}`} />{" "}
-              {PROFILE.linkedin.replace(/^https?:\/\/(www\.)?/, "")}
-            </a>
-            <a
-              {...RESUME_LINK_PROPS}
-              className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 border ${
-                isDark ? "border-slate-600 bg-slate-800 hover:bg-slate-700" : "border-blue-200 bg-white hover:bg-blue-50"
-              }`}
-            >
-              <Download className={`h-4 w-4 ${isDark ? "text-slate-200" : "text-blue-700"}`} /> Resume (PDF)
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <footer className={`py-10 text-center text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+      <footer className={`border-t-2 border-uva-orange py-10 text-center text-xs ${isDark ? "bg-uva-navy-950 text-slate-400" : "bg-uva-navy text-white/80"}`}>
         (c) {new Date().getFullYear()} {PROFILE.name}
       </footer>
-
-      <style jsx>{`
-        @keyframes arrowSlideX {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(12px);
-          }
-        }
-        .arrow-slide {
-          animation: arrowSlideX 0.9s ease-in-out infinite alternate;
-        }
-      `}</style>
     </div>
   );
 }

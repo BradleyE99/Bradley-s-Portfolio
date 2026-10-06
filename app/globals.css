@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1e293b;
 }
 
 @theme inline {
@@ -12,15 +12,43 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* UVA palette: Blue #232D4B is the primary color, Orange #E57200 the accent.
+   #E57200 is 3.6:1 on white, so it's used for borders, focus rings, and icons;
+   orange text on light backgrounds uses the darker orange-700 (4.8:1). */
+@theme {
+  --color-uva-navy: #232d4b;
+  --color-uva-navy-50: #f3f5f9;
+  --color-uva-navy-100: #e1e5ee;
+  --color-uva-navy-200: #c3cadb;
+  --color-uva-navy-600: #34406a;
+  --color-uva-navy-700: #2a3558;
+  --color-uva-navy-800: #1b233d;
+  --color-uva-navy-900: #141a2e;
+  --color-uva-navy-950: #0d1220;
+  --color-uva-orange: #e57200;
+  --color-uva-orange-50: #fff4e8;
+  --color-uva-orange-300: #f6a656;
+  --color-uva-orange-700: #b35900;
+}
+
+html[data-theme="dark"] {
+  --background: #0d1220;
+  --foreground: #e2e8f0;
+  color-scheme: dark;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+html {
+  scroll-padding-top: 4.5rem;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-uva-orange);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
 }
