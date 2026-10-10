@@ -65,11 +65,229 @@ body {
 }
 
 html {
-  scroll-padding-top: 4.5rem;
+  scroll-padding-top: 4rem;
 }
 
 :focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: 0.5rem;
+}
+
+/* Project books. Covers get a spine and a short stack of page edges; the open
+   project unfolds from its center fold on desktop (~220 ms) and slides open on mobile. */
+html {
+  --book-page: #ffffff;
+  --book-page-edge: var(--color-uva-navy-200);
+  --book-spine-from: var(--color-uva-navy);
+  --book-spine-to: var(--color-uva-navy-600);
+  --book-spine-band: var(--color-uva-orange);
+  --book-fold-shade: rgb(35 45 75 / 0.14);
+}
+
+html[data-theme="dark"] {
+  --book-page: var(--color-dbw-750);
+  --book-page-edge: var(--color-dbw-600);
+  --book-spine-from: var(--color-dbw-900);
+  --book-spine-to: var(--color-dbw-650);
+  --book-spine-band: var(--color-dbw-300);
+  --book-fold-shade: rgb(0 0 0 / 0.3);
+}
+
+.book-cover {
+  box-shadow:
+    3px 3px 0 -1px var(--book-page),
+    3px 3px 0 0 var(--book-page-edge),
+    6px 6px 0 -1px var(--book-page),
+    6px 6px 0 0 var(--book-page-edge),
+    0 14px 24px -16px rgb(0 0 0 / 0.45);
+}
+
+.book-spine {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 0.75rem;
+  border-radius: 0.375rem 0 0 0.375rem;
+  background: linear-gradient(90deg, var(--book-spine-from), var(--book-spine-to));
+}
+
+.book-spine::before,
+.book-spine::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  height: 2px;
+  background: var(--book-spine-band);
+  opacity: 0.8;
+}
+
+.book-spine::before {
+  top: 1.25rem;
+}
+
+.book-spine::after {
+  bottom: 1.25rem;
+}
+
+/* Mobile: a simple vertical reveal. Fill mode "backwards" so no clip-path or
+   transform lingers after the animation (it would clip focus rings and video). */
+.book-open {
+  animation: book-reveal 200ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+
+.book-open[data-state="closing"] {
+  animation: book-conceal 160ms ease-in forwards;
+}
+
+@keyframes book-reveal {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes book-conceal {
+  from {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+@media (min-width: 768px) {
+  .book-page-left {
+    box-shadow:
+      inset -22px 0 22px -22px var(--book-fold-shade),
+      0 12px 24px -12px rgb(0 0 0 / 0.3);
+  }
+
+  .book-page-right {
+    box-shadow:
+      inset 22px 0 22px -22px var(--book-fold-shade),
+      0 12px 24px -12px rgb(0 0 0 / 0.3);
+  }
+
+  .book-open {
+    animation: book-fade-in 120ms ease-out backwards;
+  }
+
+  .book-open[data-state="closing"] {
+    animation: book-fade-out 160ms ease-in forwards;
+  }
+
+  /* Both pages hinge on the center fold. They swing in from behind the page plane,
+     so they only ever look smaller than their final box and never cover neighbors. */
+  .book-open .book-page-left,
+  .book-open .book-page-right {
+    backface-visibility: hidden;
+    animation-duration: 220ms;
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+    animation-fill-mode: backwards;
+  }
+
+  .book-open .book-page-left {
+    transform-origin: right center;
+    animation-name: book-unfold-left;
+  }
+
+  .book-open .book-page-right {
+    transform-origin: left center;
+    animation-name: book-unfold-right;
+  }
+
+  .book-open[data-state="closing"] .book-page-left,
+  .book-open[data-state="closing"] .book-page-right {
+    animation-duration: 160ms;
+    animation-timing-function: ease-in;
+    animation-direction: reverse;
+    animation-fill-mode: forwards;
+  }
+
+  .book-open[data-state="closing"] .book-page-left {
+    animation-name: book-fold-left;
+  }
+
+  .book-open[data-state="closing"] .book-page-right {
+    animation-name: book-fold-right;
+  }
+}
+
+@keyframes book-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes book-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Fold keyframes duplicate the unfold ones under a new name so switching to the
+   closing state starts a fresh animation instead of jumping. */
+@keyframes book-unfold-left {
+  from {
+    transform: perspective(1200px) rotateY(-50deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+}
+
+@keyframes book-fold-left {
+  from {
+    transform: perspective(1200px) rotateY(-50deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+}
+
+@keyframes book-unfold-right {
+  from {
+    transform: perspective(1200px) rotateY(50deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+}
+
+@keyframes book-fold-right {
+  from {
+    transform: perspective(1200px) rotateY(50deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-open,
+  .book-open .book-page-left,
+  .book-open .book-page-right,
+  .book-open[data-state="closing"] .book-page-left,
+  .book-open[data-state="closing"] .book-page-right {
+    animation: none;
+  }
+
+  .book-open {
+    animation: book-fade-in 100ms linear backwards;
+  }
+
+  .book-open[data-state="closing"] {
+    animation: book-fade-out 100ms linear forwards;
+  }
 }

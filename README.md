@@ -4,11 +4,10 @@ Personal portfolio website for Bradley Elder, a Systems Engineering and Computer
 
 ## What's on the site
 
-- **About:** background, objectives, and education
-- **Projects:** Generative Charities (with demo video), coursework, research, and club projects
+- **Intro:** name, degree, target roles, résumé/contact links, and a one-line skills row
+- **Selected Projects:** three featured project cards (media, summary, contribution, tags), each opening a book-style details view with Problem, My Contribution, Technical Decisions, and Results; other projects sit in a compact "More projects" list
 - **Experience:** internships and other work
-- **Skills:** languages, frameworks, cloud, and tools, each linked to where it was used
-- **Contact:** email, GitHub, LinkedIn, and a downloadable résumé (PDF)
+- **About Me:** short bio, education, interests, and contact links
 
 Includes a light/dark theme toggle and a responsive layout for mobile.
 
@@ -30,7 +29,7 @@ Then open [http://localhost:3000](http://localhost:3000).
 
 ## Project layout
 
-- `app/page.js` – the single-page site; content lives in the `PROJECTS`, `PROFILE`, `JOBS`, and `SKILLS` constants at the top
+- `app/page.js` – the single-page site; content lives in the `PROJECTS`, `PROFILE`, `SKILLS`, and `JOBS` constants at the top (set `featured: true` on up to three projects to show them as full cards)
 - `app/layout.js` – page title and metadata
 - `public/` – images, demo video, and `Resume_Elder_Bradley.pdf`
 
